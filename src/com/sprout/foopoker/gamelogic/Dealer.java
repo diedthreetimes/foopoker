@@ -74,6 +74,7 @@ public class Dealer {
 		int i = 0;
 		while (c != null) {
 			checkArray[c.getIndex()]--;
+			System.out.println(c);
 			assert (checkArray[c.getIndex()] == 0);
 			c = dealer.dealCard();
 			i += 1;
