@@ -22,18 +22,19 @@ public class Card implements Comparable<Card>{
 	public enum Value { JACK, QUEEN, KING, ACE }
 	
 	/**
-	 * 
-	 * @param value should be in [1, 52]
+	 * @param value of the card, should be in [1, 52]
 	 */
 	public Card(int value) {
-		if (value >= 1 && value <= 52)
+		if (value >= 1 && value <= 52) {
 			this.value = value;
-		else
-			throw new IllegalArgumentException(value + " is not allowed for Card");
+		}
+		else {
+			throw new IllegalArgumentException(value + " is not allowed for " +
+					"Card");
+		}
 	}
 	
 	/**
-	 * 
 	 * @return suit of the card
 	 * @throws Exception
 	 */
@@ -48,50 +49,61 @@ public class Card implements Comparable<Card>{
 			return Suit.CLUB;
 	}
 	
+	// TODO (ekin): this function should somehow use Value enum
 	/**
-	 * 
 	 * @return face value of card
 	 */
 	public int getValue() {
 		int out = value % 13;
-		if (out == 0)
+		if (out == 0) {
 			return out + 13;
+		}
 		return out;
 	}
 	
+	// TODO (ekin)
 	/**
 	 * 
-	 * @return value-1, to solve array indexing problem
+	 * @return the logo of card
 	 */
-	public int getIndex() {
+	public String getLogo() {
+		return "";
+	}
+	
+	/** 
+	 * @return return arrayIndex which is value-1
+	 */
+	public int getArrayIndex() {
 		return value-1;
 	}
 	
+	/**
+	 * @return negative if another card is bigger than this card, positive 
+	 * if this card is bigger than another card, 0 if they are equal. Note
+	 * that 1 = Ace, bigger than all other cards
+	 */
 	@Override
 	public int compareTo(Card another) {
-		if (this.value < another.value)
-			return -1;
-		else if (this.value == another.value)
+		int thisCard = this.getValue();
+		int anotherCard = another.getValue();
+		if (thisCard == anotherCard) {
 			return 0;
-		else
+		}
+		
+		if (thisCard == 1) {
 			return 1;
+		}
+		else if (anotherCard == 1) {
+			return -1;
+		}
+		else {
+			return thisCard - anotherCard;
+		}
+			
 	}
 	
 	@Override
 	public String toString() {
 		return getSuit() + "-" + getValue();
 	}
-	
-	public static void main(String[] args) {
-		Card c1 = new Card(13);
-		assert (c1.getSuit() == Suit.SPADE);
-		assert (c1.getValue() == 13);
-		Card c2 = new Card(52);
-		assert (c2.getSuit() == Suit.CLUB);
-		assert (c2.getValue() == 13);
-		Card c3 = new Card(27);
-		assert (c3.getSuit() == Suit.DIAMOND);
-		assert (c3.getValue() == 1);
-	}
-
 }
