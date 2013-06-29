@@ -6,9 +6,9 @@ import java.util.Collections;
 /*
  * Dealer
  * 
- * Singleton design pattern: we only have 1 dealer!
+ * Singleton design pattern since we should only have 1 dealer!
  * 
- * dealer can shuffle() and deal top card from deck with dealCard()
+ * dealer can shuffle() and deal the top card from deck with dealCard()
  * 
  */
 
@@ -18,7 +18,7 @@ public class Dealer {
 	static Dealer dealer = null;
 	
 	// Properties
-	public Card[] cards;
+	private Card[] cards;
 	private int position; // top of the deck
 	
 	private final int DECK_SIZE = 52;
@@ -37,7 +37,7 @@ public class Dealer {
 	}
 	
 	// Constructor
-	public Dealer() {
+	private Dealer() {
 		this.cards = new Card[DECK_SIZE];
 		for (int i = 1; i <= DECK_SIZE; i++)
 			cards[i-1] = new Card(i);
@@ -64,22 +64,4 @@ public class Dealer {
 		for (int i = 1; i <= SHUFFLE_COUNT; i++)
 			Collections.shuffle(Arrays.asList(cards));
 	}
-	
-	public static void main(String[] args) throws Exception{
-		Dealer dealer = Dealer.getInstance();
-		dealer.shuffle();
-		int[] checkArray = new int[52];
-		Arrays.fill(checkArray, 1);
-		Card c = dealer.dealCard();
-		int i = 0;
-		while (c != null) {
-			checkArray[c.getIndex()]--;
-			System.out.println(c);
-			assert (checkArray[c.getIndex()] == 0);
-			c = dealer.dealCard();
-			i += 1;
-		}
-		assert (i == 52);
-	}
-
 }
