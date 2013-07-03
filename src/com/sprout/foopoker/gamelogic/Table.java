@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import com.sprout.foopoker.userdata.Player;
+
 /*
  * CircularPlayers of Players which will be used in Hand
  */
 
-public class CircularPlayers {
+public class Table {
 
 	private ArrayList<Player> players;
 	private int cur;
@@ -16,7 +18,7 @@ public class CircularPlayers {
 	private final int MAX_PLAYERS = 10;
 	private Queue<Integer> freePositions;
 	
-	public CircularPlayers() {
+	public Table() {
 		players = new ArrayList<Player>(MAX_PLAYERS);
 		freePositions = new LinkedList<Integer>();
 		for (int i = 0; i < MAX_PLAYERS; i++) {
