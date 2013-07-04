@@ -76,5 +76,27 @@ public class CardTest extends TestCase{
 		Card c2 = new Card(14);
 		assertTrue(c1.compareTo(c2) == 0);
 	}
+	
+	@Test
+	public void test_Equal() {
+		Card c1 = new Card(1);
+		Card c2 = new Card(14);
+		assertTrue(c1.equals(c2) != true);
+		
+		c2 = new Card(1);
+		assertTrue(c1.equals(c2) == true);
+	}
+	
+	@Test
+	public void test_DifferentSuits() {
+		Card c1 = new Card(1);
+		Card c2 = new Card(16);
+		Card c3 = new Card(29);
+		Card c4 = new Card(45);
+		assertEquals(c1.getSuit(), Suit.SPADE);
+		assertEquals(c2.getSuit(), Suit.HEART);
+		assertEquals(c3.getSuit(), Suit.DIAMOND);
+		assertEquals(c4.getSuit(), Suit.CLUB);
+	}
 
 }
