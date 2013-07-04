@@ -102,6 +102,19 @@ public class Card implements Comparable<Card>{
 			
 	}
 	
+	/**
+	 * @param otherCard the other card which will be compared with given card
+	 * @return true if cards are same, false otherwise
+	 */
+	@Override
+	public boolean equals(Object otherCard) {
+		return this.getSuit().equals(((Card)otherCard).getSuit()) &&
+				this.getValue() == ((Card)otherCard).getValue();
+	}
+	
+	/**
+	 * @return string representation of Card
+	 */
 	@Override
 	public String toString() {
 		return getSuit() + "-" + getValue();
