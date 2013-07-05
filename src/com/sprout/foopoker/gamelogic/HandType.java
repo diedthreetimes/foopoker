@@ -14,7 +14,7 @@ public class HandType {
 	public static final int QUAD = 9;
 	public static final int FULL_HOUSE = 8;
 	public static final int FLUSH = 7;
-	public static final int STAIGHT = 6;
+	public static final int STRAIGHT = 6;
 	public static final int THREE_OF_A_KIND = 5; 
 	public static final int TWO_PAIR = 4;
 	public static final int PAIR = 3;
@@ -42,7 +42,7 @@ public class HandType {
 		case QUAD: return "Four of a Kind";
 		case FULL_HOUSE: return "Full House";
 		case FLUSH: return "Flush";
-		case STAIGHT: return "Straight";
+		case STRAIGHT: return "Straight";
 		case THREE_OF_A_KIND: return "Three of a Kind";
 		case TWO_PAIR: return "Two Pair";
 		case PAIR: return "Pair";
@@ -56,5 +56,14 @@ public class HandType {
 	 */
 	public int getType() {
 		return this.type;
+	}
+	
+	/**
+	 * @param otherType the other type which will be compared with given type
+	 * @return true if handTypes are same, false otherwise
+	 */
+	@Override
+	public boolean equals(Object otherType) {
+		return this.getType() == ((HandType)otherType).getType();
 	}
 }
