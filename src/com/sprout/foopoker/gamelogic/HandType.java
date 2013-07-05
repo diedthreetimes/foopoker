@@ -17,7 +17,8 @@ public class HandType {
 	public static final int STAIGHT = 6;
 	public static final int THREE_OF_A_KIND = 5; 
 	public static final int TWO_PAIR = 4;
-	public static final int HIGH_CARD = 3;
+	public static final int PAIR = 3;
+	public static final int HIGH_CARD = 2;
 		
 	/**
 	 * @param t the type. Use predefined constansts in this class
@@ -25,7 +26,7 @@ public class HandType {
 	 * 	types
 	 */
 	public HandType(int t) throws IllegalArgumentException{
-		if (t < 3 || t > 10) {
+		if (t < HIGH_CARD || t > FLUSH_ROYALE) {
 			throw new IllegalArgumentException();
 		}
 		this.type = t;
@@ -44,6 +45,7 @@ public class HandType {
 		case STAIGHT: return "Straight";
 		case THREE_OF_A_KIND: return "Three of a Kind";
 		case TWO_PAIR: return "Two Pair";
+		case PAIR: return "Pair";
 		case HIGH_CARD: return "High Card";
 		}
 		return null;
