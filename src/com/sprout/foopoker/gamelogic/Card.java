@@ -78,6 +78,7 @@ public class Card implements Comparable<Card>{
 	}
 	
 	/**
+	 * @param another the another card which will be compared with given card
 	 * @return negative if another card is bigger than this card, positive 
 	 * if this card is bigger than another card, 0 if they are equal. Note
 	 * that 1 = Ace, bigger than all other cards
