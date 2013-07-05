@@ -1,81 +1,92 @@
 package com.sprout.foopoker.gamelogic;
 
+import java.util.ArrayList;
+
+
+/**
+ * Represents a hand with any given number of cards (maximum of 7 cards).
+ * 
+ * @author ekinoguz
+ */
 
 public class Hand {
 
-	public int id;
+	private ArrayList<Card> hand;
 	
-	public long moveTimer;
-	public long startTime; 
-	public long stack;
+	private HandType type;
+	private Card highCard;
 	
-	public long ante;
-	public long smallBlind;
-	public long bigBlind;
-	
-	public Dealer dealer;
-	
-	public enum Status { STARTED, PLAYING, FINISHED }
-	public Status status;
-	
+	private final static int CARD_SIZE = 7;
 	
 	public Hand() {
-		startTime = System.currentTimeMillis();
-		dealer = Dealer.getInstance();
+		this.hand = new ArrayList<Card>();
 	}
 	
 	/**
-	 * Deal new hand. Deal the card
+	 * 
+	 * @param newCard the newCard which will be added to hand
+	 * @throws ArrayIndexOutOfBoundsException if you are trying to add
+	 * 	CARD_SIZE+1=8'th card.
 	 */
-	public void startNewHand() {
-		status = Status.STARTED;
-		dealer.shuffle();
+	public void appendCard(Card newCard) throws ArrayIndexOutOfBoundsException{
+		if (hand.size() == CARD_SIZE) {
+			throw new ArrayIndexOutOfBoundsException();
+		}
+		this.hand.add(newCard);	
 	}
 	
-	public void play() {
-		preflop();
-		if (!potGood())
-			System.out.println("asd");
-			
-		flop();
+	/**
+	 * 
+	 * @param index the index of the card which we want
+	 * @return the Card with the given index
+	 * @throws ArrayIndexOutOfBoundsException if index < 0 or index >= CARD_SIZE
+	 */
+	public Card getCard(int index) throws ArrayIndexOutOfBoundsException{
+		if (index < 0 || index >= CARD_SIZE) {
+			throw new ArrayIndexOutOfBoundsException();
+		}
+		return hand.get(index);
 	}
 	
-	public void preflop() {
-		
+	/**
+	 * @return hand which is ArrayList<Card>
+	 */
+	public ArrayList<Card> getCards() {
+		return this.hand;
 	}
 	
-	public void flop() {
-		
+	/**
+	 * @return the size of the hand
+	 */
+	public int getSize() {
+		return this.hand.size();
 	}
 	
-	public void turnOrRiver() {
-		
+	/**
+	 * @return the type of the Hand
+	 */
+	public HandType getType() {
+		return type;
 	}
 	
-	public void notifyPlayer(int id) {
-		
+	/**
+	 * @return the high card of hand
+	 */
+	public Card getHighCard() {
+		return highCard;
 	}
 	
-	public void saveHand() {
-		
-	}
-	
-	public boolean moveExpired() {
-		return true;
-	}
-	
-	public boolean potGood() {
-		return true;
-	}
-	
+	/**
+	 * @return String representation of the hand
+	 */
 	public String toString() {
-		return "";
+		return hand.toString();
 	}
-
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	/**
+	 * @return the Android-friendly message according to the type
+	 */
+	public String getMessage() {
+		return type.getMessage() + " with " + highCard;
 	}
-
 }
