@@ -6,7 +6,7 @@ package com.sprout.foopoker.gamelogic;
  * 
  * @author ekinoguz
  */
-public class HandType {
+public class HandType implements Comparable<HandType>{
 	
 	public int type;
 	
@@ -66,4 +66,16 @@ public class HandType {
 	public boolean equals(Object otherType) {
 		return this.getType() == ((HandType)otherType).getType();
 	}
+	
+	/**
+	 * @param another the type card which will be compared with given type
+	 * @return negative if another type is better than this type, positive 
+	 * if this type is better than another type, 0 if they are equal.
+	 */
+	@Override
+	public int compareTo(HandType another) {
+		return this.getType() - another.getType();
+	}
 }
+
+	
