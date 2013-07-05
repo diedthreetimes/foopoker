@@ -108,6 +108,9 @@ public class Card implements Comparable<Card>{
 	 */
 	@Override
 	public boolean equals(Object otherCard) {
+		if (otherCard == null) {
+			return this == null ? true : false;
+		}
 		return this.getSuit().equals(((Card)otherCard).getSuit()) &&
 				this.getValue() == ((Card)otherCard).getValue();
 	}
