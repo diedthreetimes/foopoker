@@ -79,7 +79,7 @@ public class Card implements Comparable<Card>{
 	
 	/**
 	 * @param another the another card which will be compared with given card
-	 * @return negative if another card is bigger than this card, positive 
+	 * @return positive if another card is bigger than this card, negative 
 	 * if this card is bigger than another card, 0 if they are equal. Note
 	 * that 1 = Ace, bigger than all other cards
 	 */
@@ -92,13 +92,13 @@ public class Card implements Comparable<Card>{
 		}
 		
 		if (thisCard == 1) {
-			return 1;
-		}
-		else if (anotherCard == 1) {
 			return -1;
 		}
+		else if (anotherCard == 1) {
+			return +1;
+		}
 		else {
-			return thisCard - anotherCard;
+			return anotherCard - thisCard;
 		}
 			
 	}

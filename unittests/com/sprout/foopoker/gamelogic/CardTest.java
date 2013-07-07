@@ -1,5 +1,8 @@
 package com.sprout.foopoker.gamelogic;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import junit.framework.TestCase;
 
 import org.junit.Test;
@@ -53,21 +56,37 @@ public class CardTest extends TestCase{
 	public void test_CompareBigger() {
 		Card c1 = new Card(3);
 		Card c2 = new Card(2);
-		assertTrue(c1.compareTo(c2) > 0);
+		assertTrue(c1.compareTo(c2) < 0);
 	}
 	
 	@Test
 	public void test_CompareAce1() {
 		Card c1 = new Card(1);
 		Card c2 = new Card(2);
-		assertTrue(c1.compareTo(c2) > 0);
+		assertTrue(c1.compareTo(c2) < 0);
 	}
 	
 	@Test
 	public void test_CompareAce2() {
 		Card c1 = new Card(2);
 		Card c2 = new Card(14);
-		assertTrue(c1.compareTo(c2) < 0);
+		assertTrue(c1.compareTo(c2) > 0);
+	}
+	
+	@Test
+	public void test_SortArrayList() {
+		ArrayList<Card> list = new ArrayList<Card>();
+		list.add(new Card(3));
+		list.add(new Card(2));
+		list.add(new Card(5));
+		list.add(new Card(1));
+		list.add(new Card(4));
+		Collections.sort(list);
+		assertEquals(list.get(0).getValue(), 1);
+		assertEquals(list.get(1).getValue(), 5);
+		assertEquals(list.get(2).getValue(), 4);
+		assertEquals(list.get(3).getValue(), 3);
+		assertEquals(list.get(4).getValue(), 2);
 	}
 	
 	@Test
