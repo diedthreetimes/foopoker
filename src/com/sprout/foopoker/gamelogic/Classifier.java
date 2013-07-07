@@ -9,13 +9,13 @@ import android.annotation.SuppressLint;
 public class Classifier {
 	
 	private ArrayList<Card> cards;
-	private Card bestCard;
+	private ArrayList<Card> orderedCards;
 	private HandType type;
 	private HashMap<Integer, Integer> counts;
 	
 	/**
-	 * @param hand the hand which will be classified. Make sure you sorted
-	 * the hand beforehand!
+	 * @param hand the hand which will be classified. Make sure you sorted (
+	 * in decreasing order) the hand beforehand!
 	 * @throws IllegalArgumentException if hand has more than 5 cards
 	 */
 	public Classifier(Hand hand) throws IllegalArgumentException{
@@ -26,17 +26,18 @@ public class Classifier {
 		}
 		cards = new ArrayList<Card>(hand.getCards());
 		counts = new HashMap<Integer, Integer>();
-		bestCard = null;
+		orderedCards = new ArrayList<Card>();
 		
 		// classify the hand
 		classify();
 	}
 
 	/**
-	 * @return the high card according to the hand type
+	 * @return the top high card from the orderedCards. Returned card
+	 * will be removed
 	 */
 	public Card getBestCard() {
-		return this.bestCard;
+		return this.orderedCards.remove(0);
 	}
 	
 	/**
@@ -47,211 +48,240 @@ public class Classifier {
 	}
 	
 	/**
-	 * Decide the type and highCard of the given cards.
-	 * If it is better than this.type and/or this.highCard, update this
-	 * accordingly. 
-	 * 
-	 * NOTE: Do not forget to initialize both type and bestCard!
+	 * Decide the type and bestCard of the given cards.
+	 * Note that both type and bestCard have to be initialized after 
+	 * this function
 	 */
 	public void classify() {
 		createCountMap();
 		
-		boolean straight = false;
-		boolean flush = false;
-		Card flushCard = null;
-		Card straightCard = null;
-		Card quadCard = null;
+		boolean straight = isStraight();
+		ArrayList<Card> str = new ArrayList<Card>(orderedCards);
+		boolean flush = isFlush();
+		ArrayList<Card> flh = new ArrayList<Card>(orderedCards);
 		
-		if ((flushCard = getFlush()) != null) {
-			flush = true;
-			bestCard = flushCard;
-		}
-		if ((straightCard = getStraight()) != null) {
-			straight = true;
-			if (flush) {
-				type = new HandType(HandType.FLUSH_ROYALE);
-				return;
-			}
-		}
-		
-		if ((quadCard = getQuad()) != null) {
-			type = new HandType(HandType.QUAD);
-			bestCard = quadCard;
+		if (straight && flush) {
+			type = new HandType(HandType.FLUSH_ROYALE);
 			return;
 		}
 		
-		if ((bestCard = getFullHouse()) != null) {
+		if (isQuad()) {
+			type = new HandType(HandType.QUAD);
+			return;
+		}
+		
+		if (isFullHouse()) {
 			type = new HandType(HandType.FULL_HOUSE);
 			return;
 		}
 		
 		if (flush) {
 			type = new HandType(HandType.FLUSH);
-			bestCard = flushCard;
+			orderedCards = new ArrayList<Card>(flh);
 			return;
 		}
 		
 		if (straight) {
 			type = new HandType(HandType.STRAIGHT);
-			bestCard = straightCard;
+			orderedCards = new ArrayList<Card>(str);
 			return;
 		}
 		
-		if ((bestCard = getThreeOfAKind()) != null) {
+		if (isSet()) {
 			type = new HandType(HandType.THREE_OF_A_KIND);
 			return;
 		}
 		
-		if ((bestCard = getTwoPair()) != null) {
+		if (isTwoPair()) {
 			type = new HandType(HandType.TWO_PAIR);
 			return;
 		}
 		
-		if ((bestCard = getPair()) != null) {
+		if (isPair()) {
 			type = new HandType(HandType.PAIR);
 			return;
 		}
 		
-		if ((bestCard = getHighCard()) != null) {
+		if (isHighCard()) {
 			type = new HandType(HandType.HIGH_CARD);
 			return;
 		}
 	}
 	
 	/**
-	 * @return the highCard if cards are in order. Null otherwise
+	 * @return true if there is straight, false otherwise
 	 */
-	public Card getStraight() {
-		int endIndex = 4;
+	public boolean isStraight() {
+		int startIndex = 0;
 		boolean haveAce = false;
 		// if we have an Ace
-		if (cards.get(4).getValue() == 1) {
-			endIndex = 3;
+		if (cards.get(0).getValue() == 1) {
+			startIndex = 1;
 			haveAce = true;
 		}
-		for (int i = 0; i < endIndex; i++) {
-			if (cards.get(i).getValue() - cards.get(i+1).getValue() != -1) {
-				return null;
+		for (int i = startIndex; i < cards.size()-1; i++) {
+			if (cards.get(i).getValue() - cards.get(i+1).getValue() != 1) {
+				return false;
 			}
 		}
-		// if we do not have an Ace, biggest card is the 4th one
-		if (!haveAce) {
-			return cards.get(4);
+		// if we do not have an Ace
+		// if we have an Ace and the last card is either 2 or 10
+		// if we have an Ace and the first card is 10);
+		if (!haveAce || (cards.get(4).getValue() == 2 || cards.get(4).getValue() == 10)) {
+			orderedCards = new ArrayList<Card>(cards);
+			return true;
 		}
-		// if we have an Ace and the first card is 2
-		else if (cards.get(0).getValue() == 2) {
-			return cards.get(3);
-		}
-		// if we have an Ace and the first card is 10
-		else if (cards.get(0).getValue() == 10) {
-			return cards.get(4);
-		}
-		return null;
+		return false;
 	}
 	
 	/**
-	 * @return the highCard if there is a flush. Null otherwise
+	 * @return true if there is a flush
 	 */
-	public Card getFlush() {
+	public boolean isFlush() {
 		int type = cards.get(0).getSuit().ordinal();
 		for (int i = 1; i < cards.size(); i++) {
 			if (cards.get(i).getSuit().ordinal() != type) {
-				return null;
+				return false;
 			}
 		}
-		return cards.get(4);
+		orderedCards = new ArrayList<Card>(cards);
+		return true;
 	}
 	
 	/**
-	 * @return the quad card if there is one. null otherwise
+	 * @return true if there is a quad, false otherwise
 	 */
-	public Card getQuad() {
-		if (counts.size() == 2) {
-			for (Card c : cards) {
-				if (getCount(c) == 4) {
-					return c;
-				}
-			}
+	public boolean isQuad() {
+		if (counts.size() != 2) {
+			return false;
 		}
-		return null;
-	}
-	
-	/**
-	 * @return the pair card if there is one. null otherwise
-	 */
-	public Card getPair() {
-		if (counts.size() == 4) {
-			for (Card c : cards) {
-				if (getCount(c) == 2) {
-					return c;
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * @return the highest two pair card if there is, null otherwise
-	 */
-	public Card getTwoPair() {
-		Card first = null;
-		if (counts.size() != 3) {
-			return null;
-		}
+		setUpOrderedCards(2);
 		for (Card c : cards) {
-			if (getCount(c) != 2) {
-				continue;
+			if (getCount(c) == 4) {
+				orderedCards.set(0, c);
 			}
-			if (first == null) {
-				first = c;
-			}
-			else if (first.getValue() == c.getValue()) {
-				continue;
-			}
-			else if (first.compareTo(c) > 0) {
-				return first;
+			else if (getCount(c) == 1){
+				orderedCards.set(1, c);
 			}
 			else {
-				return c;
+				return false;
 			}
 		}
-		return null;
+		return true;
 	}
 	
 	/**
-	 * @return card which is three of a kind
+	 * @return true if there is a pair, false otherwise
 	 */
-	public Card getThreeOfAKind() {
-		if (counts.size() == 3) {
-			for (Card c : cards) {
-				if (getCount(c) == 3) {
-					return c;
+	public boolean isPair() {
+		if (counts.size() != 4) {
+			return false;
+		}
+		setUpOrderedCards(4);
+		int i = 1;
+		for (Card c : cards) {
+			if (getCount(c) == 2) {
+				orderedCards.set(0, c);
+			}
+			else {
+				orderedCards.set(i++, c);
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * @return true if there is a two pair, false otherwise
+	 */
+	public boolean isTwoPair() {
+		if (counts.size() != 3) {
+			return false;
+		}
+		Card first = null;
+		Card second = null;
+		setUpOrderedCards(3);
+		for (int i = 0; i < cards.size(); i++) {
+			if (getCount(cards.get(i)) == 1) {
+				orderedCards.set(2, cards.get(i));
+			}
+			else if (getCount(cards.get(i)) == 2) {
+				if (first == null) {
+					first = cards.get(i++);
+				}
+				else {
+					second = cards.get(i++);
 				}
 			}
-		}
-		return null;
-	}
-	
-	/**
-	 * @return full house if there is one
-	 */
-	public Card getFullHouse() {
-		if (counts.size() != 2) {
-			return null;
-		}
-		for (Card c : cards) {
-			if (getCount(c) == 3) {
-				return c;
+			else {
+				return false;
 			}
 		}
-		return null;
+		if (first.compareTo(second) < 0) {
+			orderedCards.set(0, first);
+			orderedCards.set(1, second);
+		}
+		else {
+			orderedCards.set(0, second);
+			orderedCards.set(1, first);
+		}
+		return true;
 	}
 	
 	/**
-	 * @return the biggest card from cards
+	 * @return true if three is a three of a kind
 	 */
-	public Card getHighCard() {
-		return cards.get(4);
+	public boolean isSet() {
+		if (counts.size() != 3) {
+			return false;
+		}
+		setUpOrderedCards(1);
+		for (Card c : cards) {
+			if (getCount(c) == 3) {
+				orderedCards.set(0, c);
+			}
+			else if (getCount(c) == 1) {
+				orderedCards.add(c);
+			}
+			else {
+				return false;
+			}
+		}
+		// adjust second and third cards
+		if (orderedCards.get(1).compareTo(orderedCards.get(2)) > 0) {
+			orderedCards.add(1, orderedCards.get(2));
+			orderedCards.remove(3);
+		}
+		return true;
+	}
+	
+	/**
+	 * @return true if there is a full house
+	 */
+	public boolean isFullHouse() {
+		if (counts.size() != 2) {
+			return false;
+		}
+		setUpOrderedCards(2);
+		for (Card card : cards) {
+			if (counts.get(card.getValue()) == 2) {
+				orderedCards.set(1, card);
+			}
+			else if (counts.get(card.getValue()) == 3) {
+				orderedCards.set(0, card);
+			}
+			else {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * @return true...
+	 */
+	public boolean isHighCard() {
+		orderedCards = new ArrayList<Card>(cards);
+		return true;
 	}
 	
 	/**
@@ -276,6 +306,17 @@ public class Classifier {
 			else {
 				counts.put(key, 1);
 			}
+		}
+	}
+	
+	/**
+	 * Initialize the orderedCards ArrayList with given size of null cards
+	 * @param size the size of the orderedCards
+	 */
+	private void setUpOrderedCards(int size) {
+		orderedCards.clear();
+		for (int i = 0; i < size; i++) {
+			orderedCards.add(null);
 		}
 	}
 }
