@@ -9,21 +9,22 @@ import org.junit.Test;
 
 public class ClassifierTest {
 	
-	Hand h1; // J - J - J - 10 - 10
-	Hand h2; // J - J - J - J - 10
-	Hand h3; // 1 - 5 - 4 - 3 - 2 straight different suits
-	Hand h4; // A - K - Q - J - 10 straight different suits
-	Hand h5; // J - 10 - 9 - 8 - 7 straight different suits
-	Hand h6; // A - A - Q - 2 - 2
-	Hand h7; // K - K - 7 - 6 - 5
-	Hand h8; // A - A - A - 3 - 2
-	Hand h9; // J - J - J - 10 - 9
-	Hand h10; // 10 - 8 - 6 - 5 - 2 for High Card
-	Hand h11; // A - 5 - 4 - 3 - 2 for flush royale
-	Hand h12; // A - K - Q - J - 10 for flush royale
-	Hand h13; // A - 9 - 5 - 3 - 2 for flush
-	Hand h14; // 9 - 5 - 4 - 3 - 2 for flush
-	Hand h15; // 3 - 3 - 2 - 2 - 2
+	public Hand h1;  // J - J - J - 10 - 10
+	public Hand h2;  // J - J - J - J - 10
+	public Hand h3;  // 1 - 5 - 4 - 3 - 2 straight different suits
+	public Hand h4;  // A - K - Q - J - 10 straight different suits
+	public Hand h5;  // J - 10 - 9 - 8 - 7 straight different suits
+	public Hand h6;  // A - A - Q - 2 - 2
+	public Hand h7;  // K - K - 7 - 6 - 5
+	public Hand h8;  // A - A - A - 3 - 2
+	public Hand h9;  // J - J - J - 10 - 9
+	public Hand h10; // 10 - 8 - 6 - 5 - 2 for High Card
+	public Hand h11; // A - 5 - 4 - 3 - 2 for flush royale
+	public Hand h12; // A - K - Q - J - 10 for flush royale
+	public Hand h13; // A - 9 - 5 - 3 - 2 for flush
+	public Hand h14; // 9 - 5 - 4 - 3 - 2 for flush
+	public Hand h15; // 3 - 3 - 2 - 2 - 2
+	public Hand h16; // 10 - 3 - 3 - 2 - 2
 
 	@Before
 	public void setUp() throws Exception {
@@ -147,6 +148,14 @@ public class ClassifierTest {
 		h15.appendCard(new Card(16));
 		h15.appendCard(new Card(2));
 		h15.appendCard(new Card(15));
+		
+		// 10 - 3 - 3 - 2 - 2
+		h16 = new Hand();
+		h16.appendCard(new Card(10));
+		h16.appendCard(new Card(3));
+		h16.appendCard(new Card(16));
+		h16.appendCard(new Card(2));
+		h16.appendCard(new Card(15));
 	}
 	
 	@Test
@@ -226,11 +235,11 @@ public class ClassifierTest {
 		assertFalse(c.isStraight());
 		c = new Classifier(h3);
 		assertTrue(c.isStraight());
-		assertEquals(c.getBestCard().getValue(), 1);
 		assertEquals(c.getBestCard().getValue(), 5);
 		assertEquals(c.getBestCard().getValue(), 4);
 		assertEquals(c.getBestCard().getValue(), 3);
 		assertEquals(c.getBestCard().getValue(), 2);
+		assertEquals(c.getBestCard().getValue(), 1);
 		c = new Classifier(h4);
 		assertTrue(c.isStraight());
 		assertEquals(c.getBestCard().getValue(), 1);
@@ -257,11 +266,11 @@ public class ClassifierTest {
 		assertFalse(c.isStraight());
 		c = new Classifier(h11);
 		assertTrue(c.isStraight());
-		assertEquals(c.getBestCard().getValue(), 1);
 		assertEquals(c.getBestCard().getValue(), 5);
 		assertEquals(c.getBestCard().getValue(), 4);
 		assertEquals(c.getBestCard().getValue(), 3);
 		assertEquals(c.getBestCard().getValue(), 2);;
+		assertEquals(c.getBestCard().getValue(), 1);
 		c = new Classifier(h12);
 		assertTrue(c.isStraight());
 		assertEquals(c.getBestCard().getValue(), 1);
@@ -438,7 +447,12 @@ public class ClassifierTest {
 		c = new Classifier(h14);
 		assertFalse(c.isTwoPair());
 		c = new Classifier(h15);
-		assertFalse(c.isTwoPair()); 
+		assertFalse(c.isTwoPair());
+		c = new Classifier(h16);
+		assertTrue(c.isTwoPair());
+		assertEquals(c.getBestCard().getValue(), 3);
+		assertEquals(c.getBestCard().getValue(), 2);
+		assertEquals(c.getBestCard().getValue(), 10);
 	}
 	
 	@Test
@@ -495,11 +509,11 @@ public class ClassifierTest {
 		
 		// 1 - 5 - 4 - 3 - 2 straight different suits
 		c = new Classifier(h3);
-		assertEquals(c.getBestCard().getValue(), 1);
 		assertEquals(c.getBestCard().getValue(), 5);
 		assertEquals(c.getBestCard().getValue(), 4);
 		assertEquals(c.getBestCard().getValue(), 3);
 		assertEquals(c.getBestCard().getValue(), 2);
+		assertEquals(c.getBestCard().getValue(), 1);
 		assertEquals(c.getHandType(), new HandType(HandType.STRAIGHT));
 		
 		// A - K - Q - J - 10 straight different suits
@@ -613,6 +627,48 @@ public class ClassifierTest {
 		Classifier c2 = new Classifier(h1);
 		assertEquals(c2.getCount(new Card(10)), 2);
 		assertEquals(c2.getCount(new Card(11)), 3);
+	}
+	
+	@Test
+	public void test_CompareTo() {
+		Classifier c1 = new Classifier(h1); // J - J - J - 10 - 10
+		Classifier c2 = new Classifier(h2); // J - J - J - J - 10                         
+		Classifier c3 = new Classifier(h3); // 1 - 5 - 4 - 3 - 2 straight different suits 
+		Classifier c4 = new Classifier(h4); // A - K - Q - J - 10 straight different suits
+		Classifier c5 = new Classifier(h5); // J - 10 - 9 - 8 - 7 straight different suits
+		Classifier c6 = new Classifier(h6); // A - A - Q - 2 - 2                          
+		Classifier c7 = new Classifier(h7); // K - K - 7 - 6 - 5                          
+		Classifier c8 = new Classifier(h8); // A - A - A - 3 - 2                          
+		Classifier c9 = new Classifier(h9); // J - J - J - 10 - 9                         
+		Classifier c10 = new Classifier(h10); // 10 - 8 - 6 - 5 - 2 for High Card           
+		Classifier c11 = new Classifier(h11); // A - 5 - 4 - 3 - 2 for flush royale         
+		Classifier c12 = new Classifier(h12); // A - K - Q - J - 10 for flush royale        
+		Classifier c13 = new Classifier(h13); // A - 9 - 5 - 3 - 2 for flush                
+		Classifier c14 = new Classifier(h14); // 9 - 5 - 4 - 3 - 2 for flush                
+		Classifier c15 = new Classifier(h15); // 3 - 3 - 2 - 2 - 2
+		assertTrue(c1.compareTo(c2) < 0);
+		assertTrue(c2.compareTo(c1) > 0);
+		assertTrue(c3.compareTo(c4) < 0);
+		assertTrue(c4.compareTo(c5) > 0);
+		assertTrue(c3.compareTo(c5) < 0);
+		
+		assertTrue(c7.compareTo(c6) < 0);
+		assertTrue(c6.compareTo(c8) < 0);
+		assertTrue(c8.compareTo(c9) > 0);
+		assertTrue(c7.compareTo(c10) > 0);
+		assertTrue(c5.compareTo(c8) > 0);
+		
+		assertTrue(c12.compareTo(c11) > 0);
+		assertTrue(c12.compareTo(c13) > 0);
+		assertTrue(c12.compareTo(c14) > 0);
+		assertTrue(c12.compareTo(c15) > 0);
+		
+		assertTrue(c11.compareTo(c4) > 0);
+		assertTrue(c13.compareTo(c14) > 0);
+		assertTrue(c15.compareTo(c13) > 0);
+		assertTrue(c15.compareTo(c4) > 0);
+		assertTrue(c1.compareTo(c15) > 0);
+		assertTrue(c2.compareTo(c15) > 0);
 	}
 	
 	private Hand createHand(int size) {

@@ -6,12 +6,14 @@ import java.util.HashMap;
 import android.annotation.SuppressLint;
 
 @SuppressLint("UseSparseArrays")
-public class Classifier {
+public class Classifier implements Comparable<Classifier>{
 	
 	private ArrayList<Card> cards;
 	private ArrayList<Card> orderedCards;
 	private HandType type;
 	private HashMap<Integer, Integer> counts;
+	
+	private int bestCardIndex;
 	
 	/**
 	 * @param hand the hand which will be classified. Make sure you sorted (
@@ -27,17 +29,22 @@ public class Classifier {
 		cards = new ArrayList<Card>(hand.getCards());
 		counts = new HashMap<Integer, Integer>();
 		orderedCards = new ArrayList<Card>();
+		initBestCardIndex();
 		
 		// classify the hand
 		classify();
 	}
 
 	/**
-	 * @return the top high card from the orderedCards. Returned card
-	 * will be removed
+	 * @return the next best card from orderedCards
+	 * @throw IndexOutOfBoundsException if there is no more cards to return
 	 */
-	public Card getBestCard() {
-		return this.orderedCards.remove(0);
+	public Card getBestCard() throws IndexOutOfBoundsException {
+		if (bestCardIndex < this.orderedCards.size()) {
+			return this.orderedCards.get(bestCardIndex++);
+		} else {
+			throw new IndexOutOfBoundsException("Have no more best cards in Classifier");
+		}
 	}
 	
 	/**
@@ -124,11 +131,15 @@ public class Classifier {
 				return false;
 			}
 		}
-		// if we do not have an Ace
-		// if we have an Ace and the last card is either 2 or 10
-		// if we have an Ace and the first card is 10);
-		if (!haveAce || (cards.get(4).getValue() == 2 || cards.get(4).getValue() == 10)) {
+		// if we do not have an Ace OR
+		// if we have an Ace and the last card is either 10
+		// if we have an Ace and the last card is either 2
+		if (!haveAce || cards.get(4).getValue() == 10 || cards.get(4).getValue() == 2) {
 			orderedCards = new ArrayList<Card>(cards);
+			// ace is the smallest card if we have 5 high straight
+			if (cards.get(4).getValue() == 2) {
+				orderedCards.add(orderedCards.remove(0));
+			}
 			return true;
 		}
 		return false;
@@ -293,6 +304,13 @@ public class Classifier {
 	}
 	
 	/**
+	 * @return the size of orderedCards
+	 */
+	public int getOrderedCardsSize() {
+		return orderedCards.size();
+	}
+	
+	/**
 	 * Create counts map for each card. Map will store # of times each card
 	 * is in the hand.
 	 */
@@ -318,5 +336,42 @@ public class Classifier {
 		for (int i = 0; i < size; i++) {
 			orderedCards.add(null);
 		}
+	}
+
+	/**
+	 * @param another the another Classifier which we will compare
+	 * @return positive if this Classifier returns better (HandType, 
+	 * orderedCards) than the another. -1 if vice versa, 0 if they are equal
+	 */
+	@Override
+	public int compareTo(Classifier another) {
+		int typeCompare = this.getHandType().compareTo(another.getHandType());
+		if (typeCompare != 0) {
+			return typeCompare;
+		}
+		int comp;
+		for (int i = 0; i < this.getOrderedCardsSize(); i++) {
+			comp = this.getBestCard().compareTo(another.getBestCard());
+			if (comp != 0) {
+				another.initBestCardIndex();
+				this.initBestCardIndex();
+				return comp * -1;
+			}
+		}
+		another.initBestCardIndex();
+		this.initBestCardIndex();
+		return 0;
+	}
+	
+	private void initBestCardIndex() {
+		this.bestCardIndex = 0;
+	}
+	
+	/**
+	 * @return string representation of Classifier, HandType and orderedCards
+	 */
+	@Override
+	public String toString() {
+		return this.type.getMessage() + " with " + orderedCards; 
 	}
 }
