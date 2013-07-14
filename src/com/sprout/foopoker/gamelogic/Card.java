@@ -21,6 +21,17 @@ public class Card implements Comparable<Card>{
   public enum Value { JACK, QUEEN, KING, ACE }
   
   /**
+   * TODO: Please add a non int constructor
+   * Something like Card(Suit, int) or
+   * Card(String) or
+   * Card(Suit, String)
+   * 
+   * This is what I would imagine from each
+   * Card(Suit.Spade, 3) #=> 3 of spades
+   * Card("3s") #=> 3 of spades
+   * Card(Suit.Spade, "3") #=> 3 of spades
+   */
+  /**
    * @param value of the card, should be in [1, 52]
    */
   public Card(int value) {
