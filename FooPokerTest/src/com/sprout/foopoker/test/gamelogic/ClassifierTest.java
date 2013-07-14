@@ -1,4 +1,4 @@
-package com.sprout.foopoker.gamelogic;
+package com.sprout.foopoker.test.gamelogic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -10,6 +10,8 @@ import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.sprout.foopoker.gamelogic.*;
 
 public class ClassifierTest {
   

@@ -85,18 +85,7 @@ public class Table {
 		}
 	}
 	
-	/**
-	 * 
-	 * @return number of Players in Table
-	 */
 	public int size() {
 		return players.size();
-	}
-	
-	/**
-	 * @return the all players in table
-	 */
-	public ArrayList<Player> getAllPlayers() {
-		return players;
 	}
 }

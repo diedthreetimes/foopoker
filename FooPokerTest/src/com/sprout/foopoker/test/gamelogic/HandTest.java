@@ -1,10 +1,13 @@
-package com.sprout.foopoker.gamelogic;
+package com.sprout.foopoker.test.gamelogic;
 
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
+
+import com.sprout.foopoker.gamelogic.Card;
+import com.sprout.foopoker.gamelogic.Hand;
 
 public class HandTest {
 

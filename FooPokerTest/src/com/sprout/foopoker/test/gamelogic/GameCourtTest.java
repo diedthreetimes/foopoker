@@ -1,4 +1,4 @@
-package com.sprout.foopoker.gamelogic;
+package com.sprout.foopoker.test.gamelogic;
 
 import java.util.ArrayList;
 
@@ -6,6 +6,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.sprout.foopoker.gamelogic.Card;
+import com.sprout.foopoker.gamelogic.GameCourt;
+import com.sprout.foopoker.gamelogic.Hand;
 import com.sprout.foopoker.userdata.Player;
 
 public class GameCourtTest {

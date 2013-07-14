@@ -1,8 +1,10 @@
-package com.sprout.foopoker.gamelogic;
+package com.sprout.foopoker.test.gamelogic;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+
+import com.sprout.foopoker.gamelogic.HandType;
 
 public class HandTypeTest {
 

@@ -1,6 +1,9 @@
-package com.sprout.foopoker.userdata;
+package com.sprout.foopoker.test.userdata;
 
 import org.junit.Test;
+
+import com.sprout.foopoker.userdata.User;
+import com.sprout.foopoker.userdata.UserDatabaseHandler;
 
 import android.test.ActivityTestCase;
 import android.test.RenamingDelegatingContext;

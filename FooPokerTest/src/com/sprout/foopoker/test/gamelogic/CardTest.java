@@ -1,16 +1,16 @@
-package com.sprout.foopoker.gamelogic;
+package com.sprout.foopoker.test.gamelogic;
+
+import junit.framework.TestCase;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
+import com.sprout.foopoker.gamelogic.Card;
 import com.sprout.foopoker.gamelogic.Card.Suit;
 
-public class CardTest extends TestCase{
-
+public class CardTest extends TestCase {
   @Test
   public void test_IsCardCreated() {
     Card c1 = new Card(13);

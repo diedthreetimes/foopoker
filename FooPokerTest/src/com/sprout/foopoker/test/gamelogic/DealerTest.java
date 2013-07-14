@@ -1,10 +1,13 @@
-package com.sprout.foopoker.gamelogic;
+package com.sprout.foopoker.test.gamelogic;
 
 import java.util.Arrays;
 
 import junit.framework.TestCase;
 
 import org.junit.Test;
+
+import com.sprout.foopoker.gamelogic.Card;
+import com.sprout.foopoker.gamelogic.Dealer;
 
 public class DealerTest extends TestCase{
 
