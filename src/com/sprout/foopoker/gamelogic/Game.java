@@ -3,6 +3,8 @@ package com.sprout.foopoker.gamelogic;
 import java.util.ArrayList;
 import java.util.Timer;
 
+import com.sprout.foopoker.userdata.Player;
+
 import android.text.format.Time;
 
 public class Game {
@@ -20,13 +22,13 @@ public class Game {
 	public long bigBlind;
 	public long ante;
 	
-	private CircularPlayers players;
+	private Table players;
 	
 	public Game(long smallBlind, long bigBlind, long ante) {
 		this.smallBlind = smallBlind;
 		this.bigBlind = bigBlind;
 		this.ante = ante;
-		this.players = new CircularPlayers();
+		this.players = new Table();
 	}
 	
 	public void play() {
@@ -34,8 +36,8 @@ public class Game {
 		long profit;
 		
 		while (players.size() > 1) {
-			Hand hand = new Hand();
-			winners = GameCourt.getWinner(hand);
+			GameHand hand = new GameHand();
+			winners = new int[0];//= GameCourt.getWinner(hand);
 			
 			// for each winner, update their stack accordingly
 			totalWinners = winners.length;
