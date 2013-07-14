@@ -1,23 +1,20 @@
 package com.sprout.foopoker.test.gamelogic;
 
-import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
+import junit.framework.TestCase;
 
 import com.sprout.foopoker.gamelogic.Card;
 import com.sprout.foopoker.gamelogic.Hand;
 
-public class HandTest {
+public class HandTest extends TestCase {
 
-  @Test
   public void test_NotNull() {
     Hand hand = new Hand();
     assertNotNull(hand);
   }
   
-  @Test
   public void test_AddAndRetriveCorrectly() {
     Hand hand = new Hand();
     Card card = new Card(1);
@@ -25,7 +22,6 @@ public class HandTest {
     assertEquals(card, hand.getCard(0));
   }
   
-  @Test
   public void test_NotAddMoreThanCardSize() {
     Hand hand = new Hand();
     for (int i = 0; i < 7; i++) {
@@ -41,7 +37,6 @@ public class HandTest {
     }
   }
 
-  @Test(expected=ArrayIndexOutOfBoundsException.class)
   public void test_SizeCheck() {
     Hand hand = new Hand();
     for (int i = 0; i < 7; i++) {
@@ -52,9 +47,9 @@ public class HandTest {
       hand.appendCard(new Card(5));
       assertEquals(hand.getSize(), 7);
     }
+    // FIXME: Where does the index out of bounds occur? Is this an appropriate exception?
   }
   
-  @Test(expected=ArrayIndexOutOfBoundsException.class)
   public void test_AppendCards() {
     Hand hand = new Hand();
     ArrayList<Card> cards = new ArrayList<Card>();
@@ -66,7 +61,8 @@ public class HandTest {
     for (int i = 1; i <= 7; i++) {
       assertEquals(hand.getCard(i-1), new Card(i));
     }
-    hand.appendCard(new Card(22));
-    hand.appendCards(cards);
+    hand.appendCard(new Card(22)); // This is the line that throws the exception is that correct?
+    hand.appendCards(cards); // If so why does this line exist?
+    // FIXME: Where does the index out of bounds occur? Is this an appropriate exception?
   }
 }

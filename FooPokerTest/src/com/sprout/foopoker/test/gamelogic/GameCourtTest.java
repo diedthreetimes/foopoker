@@ -2,16 +2,14 @@ package com.sprout.foopoker.test.gamelogic;
 
 import java.util.ArrayList;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import junit.framework.TestCase;
 
 import com.sprout.foopoker.gamelogic.Card;
 import com.sprout.foopoker.gamelogic.GameCourt;
 import com.sprout.foopoker.gamelogic.Hand;
 import com.sprout.foopoker.userdata.Player;
 
-public class GameCourtTest {
+public class GameCourtTest extends TestCase{
 
   Player p1 = new Player(1, 100);
   Player p2 = new Player(2, 100);
@@ -25,8 +23,9 @@ public class GameCourtTest {
   
   ArrayList<Player> players1 = new ArrayList<Player>();
   
-  @Before
-  public void setUp() throws Exception {
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
     ClassifierTest hands = new ClassifierTest();
     hands.setUp();
     fiveCards1.add(new Card(2));
@@ -55,12 +54,12 @@ public class GameCourtTest {
     players1.add(p3);
   }
 
-  @After
-  public void tearDown() throws Exception {
+  @Override
+  protected void tearDown() throws Exception {
+    super.tearDown();
   }
 
-  @Test
-  public void test() {
+  public void testMain() {
     GameCourt gc = new GameCourt(fiveCards1, players1);
   }
 }

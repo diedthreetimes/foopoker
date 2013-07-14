@@ -1,35 +1,38 @@
 package com.sprout.foopoker.test.gamelogic;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
+import junit.framework.TestCase;
 
 import com.sprout.foopoker.gamelogic.HandType;
 
-public class HandTypeTest {
+public class HandTypeTest extends TestCase {
 
-  @Test
   public void test_NotNull() {
     HandType type = new HandType(HandType.FLUSH_ROYALE);
     assertNotNull(type);
   }
   
-  @Test(expected=IllegalArgumentException.class)
   public void test_ThrowExceptionMinus() {
-    new HandType(-1);
+    try{
+      new HandType(-1);
+      fail("IllegalArgument expected");
+    } catch(IllegalArgumentException expected){ }
+    
   }
   
-  @Test(expected=IllegalArgumentException.class)
   public void test_ThrowExceptionHighCard() {
-    new HandType(HandType.HIGH_CARD-1);
+    try{
+      new HandType(HandType.HIGH_CARD-1);
+      fail("IllegalArgumentException expected");
+    } catch(IllegalArgumentException expected){ }
   }
   
-  @Test(expected=IllegalArgumentException.class)
   public void test_ThrowExceptionFlushRoyale() {
-    new HandType(HandType.FLUSH_ROYALE+1);
+    try{
+      new HandType(HandType.FLUSH_ROYALE+1);
+      fail("IllegalArgumentException expected");
+    } catch(IllegalArgumentException expected){ }
   }
 
-  @Test
   public void test_GetCorrectType() {
     HandType t1 = new HandType(HandType.FLUSH_ROYALE);
     assertEquals(t1.getType(), HandType.FLUSH_ROYALE);
@@ -41,7 +44,6 @@ public class HandTypeTest {
     assertEquals(t3.getType(), HandType.HIGH_CARD);
   }
   
-  @Test
   public void test_GetMessage() {
     HandType t1 = new HandType(HandType.FLUSH_ROYALE);
     assertNotNull(t1.getMessage());
@@ -53,7 +55,6 @@ public class HandTypeTest {
     assertNotNull(t3.getMessage());
   }
   
-  @Test
   public void test_Equals() {
     HandType t1 = new HandType(HandType.FLUSH_ROYALE);
     HandType t2 = new HandType(HandType.FLUSH);
@@ -69,7 +70,6 @@ public class HandTypeTest {
     assertTrue(t2.equals(t2));
   }
   
-  @Test
   public void test_Compare() {
     HandType t1 = new HandType(HandType.FLUSH_ROYALE);
     HandType t2 = new HandType(HandType.FLUSH);

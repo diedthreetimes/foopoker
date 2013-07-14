@@ -4,27 +4,22 @@ import java.util.Arrays;
 
 import junit.framework.TestCase;
 
-import org.junit.Test;
-
 import com.sprout.foopoker.gamelogic.Card;
 import com.sprout.foopoker.gamelogic.Dealer;
 
 public class DealerTest extends TestCase{
 
-  @Test
   public void test_Singleton() {
     Dealer dealer1 = Dealer.getInstance();
     Dealer dealer2 = Dealer.getInstance();
     assertEquals(dealer1, dealer2);
   }
   
-  @Test
   public void test_NotNull() {
     Dealer d1 = Dealer.getInstance();
     assertNotNull(d1);
   }
   
-  @Test
   public void test_CheckFullDeck() {
     Dealer d1 = Dealer.getInstance();
     d1.shuffle();
@@ -41,7 +36,6 @@ public class DealerTest extends TestCase{
     assertEquals(i, 52);
   }
   
-  @Test
   public void test_CheckEndOfDeck() {
     Dealer d1 = Dealer.getInstance();
     d1.shuffle();

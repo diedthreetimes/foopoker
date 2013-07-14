@@ -1,20 +1,17 @@
 package com.sprout.foopoker.test.gamelogic;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.lang.reflect.Method;
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import junit.framework.TestCase;
 
 import com.sprout.foopoker.gamelogic.*;
 
-public class ClassifierTest {
+public class ClassifierTest extends TestCase {
   
+  /*
+   * FIXME: In my opinion these hands deserve more descriptive names
+   */
   public Hand h1;  // J - J - J - 10 - 10
   public Hand h2;  // J - J - J - J - 10
   public Hand h3;  // 1 - 5 - 4 - 3 - 2 straight different suits
@@ -32,8 +29,9 @@ public class ClassifierTest {
   public Hand h15; // 3 - 3 - 2 - 2 - 2
   public Hand h16; // 10 - 3 - 3 - 2 - 2
 
-  @Before
-  public void setUp() throws Exception {
+  @Override
+  protected void setUp() throws Exception {
+    super.setUp();
     // J - J - J - 10 - 10
     h1 = new Hand();
     h1.appendCard(new Card(37));
@@ -164,22 +162,24 @@ public class ClassifierTest {
     h16.appendCard(new Card(15));
   }
   
-  @Test
   public void test_NotNull() {
     assertNotNull(new Classifier(createHand(5)));
   }
   
-  @Test(expected=IllegalArgumentException.class)
   public void test_NullLow() {
-    new Classifier(createHand(1));
+    try {
+      new Classifier(createHand(1));
+      fail("IllegalArgument not thrown");
+    } catch(IllegalArgumentException e) {}
   }
   
-  @Test(expected=IllegalArgumentException.class)
   public void test_NullHigh() {
-    new Classifier(createHand(6));
+    try {
+      new Classifier(createHand(6));
+      fail("Should have thrown IllegalArgument");
+    } catch(IllegalArgumentException e) { }
   }
     
-  @Test
   public void test_IsFlush() throws Exception {
     Method method = Classifier.class.getDeclaredMethod("isFlush");
     method.setAccessible(true);
@@ -235,7 +235,6 @@ public class ClassifierTest {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
   }
   
-  @Test
   public void test_isStraight() throws Exception {
     Method method = Classifier.class.getDeclaredMethod("isStraight");
     method.setAccessible(true);
@@ -296,7 +295,6 @@ public class ClassifierTest {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
   }
   
-  @Test
   public void test_IsPair() throws Exception{
     Method method = Classifier.class.getDeclaredMethod("isPair");
     method.setAccessible(true);
@@ -336,7 +334,6 @@ public class ClassifierTest {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
   }
   
-  @Test
   public void test_isQuad() throws Exception{
     Method method = Classifier.class.getDeclaredMethod("isQuad");
     method.setAccessible(true);
@@ -374,7 +371,6 @@ public class ClassifierTest {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
   }
   
-  @Test
   public void test_IsHighCard() throws Exception {
     // 2 - 5 - 6 - 8 - 10 for High Card
     Classifier c = new Classifier(h10);
@@ -388,7 +384,6 @@ public class ClassifierTest {
     assertEquals(c.getBestCard().getValue(), 2);
   }
   
-  @Test
   public void test_IsSet() throws Exception{
     Method method = Classifier.class.getDeclaredMethod("isSet");
     method.setAccessible(true);
@@ -431,7 +426,6 @@ public class ClassifierTest {
     
   }
   
-  @Test
   public void test_IsTwoPair() throws Exception{
      Method method = Classifier.class.getDeclaredMethod("isTwoPair");
     method.setAccessible(true);
@@ -475,7 +469,6 @@ public class ClassifierTest {
     assertEquals(c.getBestCard().getValue(), 10);
   }
   
-  @Test
   public void test_IsFullHouse() throws Exception{
     Method method = Classifier.class.getDeclaredMethod("isFullHouse");
     method.setAccessible(true);
@@ -515,7 +508,6 @@ public class ClassifierTest {
     assertEquals(c.getBestCard().getValue(), 3);
   }
   
-  @Test
   public void test_Classifier() {
     // J - J - J - 10 - 10
     Classifier c = new Classifier(h1);
@@ -637,7 +629,6 @@ public class ClassifierTest {
     assertEquals(c.getHandType(), new HandType(HandType.FULL_HOUSE));
   }
   
-  @Test
   public void test_CountsMap() {
     Classifier c3 = new Classifier(h5);
     assertEquals(c3.getCount(new Card(24)), 1);
@@ -651,7 +642,6 @@ public class ClassifierTest {
     assertEquals(c2.getCount(new Card(11)), 3);
   }
   
-  @Test
   public void test_CompareTo() {
     Classifier c1 = new Classifier(h1); // J - J - J - 10 - 10
     Classifier c2 = new Classifier(h2); // J - J - J - J - 10                         
