@@ -103,5 +103,70 @@ public class CardTest extends TestCase {
     assertEquals(c3.getSuit(), Suit.DIAMOND);
     assertEquals(c4.getSuit(), Suit.CLUB);
   }
+  
+  public void test_Constructor() {
+    Card c1 = new Card(Suit.DIAMOND, 7);
+    assertEquals(c1.getSuit(), Suit.DIAMOND);
+    assertEquals(c1.getValue(), 7);
+    
+    c1 = new Card(Suit.HEART, 13);
+    assertEquals(c1.getSuit(), Suit.HEART);
+    assertEquals(c1.getValue(), 13);
+    
+    Card c2 = new Card("Kh");
+    assertEquals(c1,c2);
+    
+    c1 = new Card(Suit.CLUB, 1);
+    assertEquals(c1.getSuit(), Suit.CLUB);
+    
+    c2 = new Card("Ac");
+    assertEquals(c1,c2);
+    
+    c1 = new Card(Suit.SPADE, 3);
+    assertEquals(c1.getSuit(), Suit.SPADE);
+    assertEquals(c1.getValue(), 3);
+    
+    c2 = new Card("3s");
+    assertEquals(c1,c2);
+    
+    c2 = new Card(3);
+    assertEquals(c1,c2);
+    
+    c1 = new Card(Suit.HEART, 11);
+    c2 = new Card("jh");
+    assertEquals(c1,c2);
+    
+    c1 = new Card(Suit.CLUB, 13);
+    c2 = new Card("KC");
+    assertEquals(c1,c2);
+    
+    c1 = new Card(Suit.DIAMOND, 1);
+    c2 = new Card("Ad");
+    assertEquals(c1,c2);
+    
+    c1 = new Card("0d");
+    assertEquals(c1.getValue(), 10);
+    
+    c1 = new Card("2d");
+    assertEquals(c1.getValue(), 2);
+    
+    c1 = new Card("5H");
+    assertEquals(c1.getValue(), 5);
+    
+    try{
+      c1 = new Card("bs");
+      fail("Expect to throw");
+    } catch(IllegalArgumentException e){ }
 
+    try{
+      c1 = new Card("2g");
+      fail("Expect to throw");
+    } catch(IllegalArgumentException e){ }
+    
+    try{
+      c1 = new Card("10s");
+      fail("Expect to throw");
+    } catch(IllegalArgumentException e){ }
+    
+  }
 }

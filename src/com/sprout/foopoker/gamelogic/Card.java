@@ -21,16 +21,83 @@ public class Card implements Comparable<Card>{
   public enum Value { JACK, QUEEN, KING, ACE }
   
   /**
-   * TODO: Please add a non int constructor
-   * Something like Card(Suit, int) or
-   * Card(String) or
-   * Card(Suit, String)
-   * 
-   * This is what I would imagine from each
-   * Card(Suit.Spade, 3) #=> 3 of spades
-   * Card("3s") #=> 3 of spades
-   * Card(Suit.Spade, "3") #=> 3 of spades
+   * @param suit of the new card
+   * @param value of the new card [1-13]
    */
+  public Card(Suit suit, int value){
+    if (value < 1 || value > 13){
+      throw new IllegalArgumentException("Unsported value " + value);
+    }
+    
+    this.value = value;
+    switch (suit){
+    case SPADE:
+      break;
+    case HEART:
+      this.value += 13;
+      break;
+    case DIAMOND:
+      this.value += 13*2;
+      break;
+    case CLUB:
+      this.value += 13*3;
+      break;
+    }
+  }
+  
+  /**
+   * 
+   * Convert the two character string "[value][suit]" to a Card. Here '0' represents 10.
+   * 
+   * @param string representation (case insensitive) of the card.
+   *   Should be value ([2-9|0|A|K|Q|J]) followed by suit [s|h|c|d]
+   * 
+   */
+  public Card(String string){
+    
+    switch(Character.toUpperCase( string.charAt(0) )){
+    case 'A':
+      this.value = 1;
+      break;
+    case 'K':
+      this.value = 13;
+      break;
+    case 'Q':
+      this.value = 12;
+      break;
+    case 'J':
+      this.value = 11;
+      break;
+    case '0':
+      this.value = 10;
+      break;
+    default:
+        // 1 is actually accepted here as an ace.
+      this.value = Character.getNumericValue((string.charAt(0)));  
+
+      if(this.value < 0 || this.value > 10)
+        throw new IllegalArgumentException("Invalid value " + string.charAt(0));
+      
+      break;
+    }
+    
+    switch(Character.toUpperCase( string.charAt(1) )){
+    case 'S': // Value is the same
+      break;
+    case 'H':
+      this.value += 13;
+      break;
+    case 'D':
+      this.value += 13*2;
+      break;
+    case 'C':
+      this.value += 13*3;
+      break;
+    default:
+      throw new IllegalArgumentException("Invalid suit " + string.charAt(1));
+    }
+   }
+  
   /**
    * @param value of the card, should be in [1, 52]
    */
@@ -126,6 +193,6 @@ public class Card implements Comparable<Card>{
    */
   @Override
   public String toString() {
-    return getSuit() + "-" + getValue();
+    return getValue() + "-" + getSuit();
   }
 }
