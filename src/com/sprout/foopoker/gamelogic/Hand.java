@@ -1,6 +1,7 @@
 package com.sprout.foopoker.gamelogic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 
 /**
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  * @author ekinoguz
  */
 
-public class Hand {
+public class Hand implements Comparable<Hand> {
 
   private ArrayList<Card> hand;
   private static final int CARD_SIZE = 7;
@@ -18,6 +19,40 @@ public class Hand {
   public Hand() {
     this.hand = new ArrayList<Card>();
   }
+  
+  /**
+   * Initialize a new hand from many cards
+   * @param cards the cards that make the hand
+   */
+  public Hand(Card... cards) {
+    this();
+    for (Card c: cards)
+      appendCard(c);
+  }
+  
+  /** 
+   * Initialize a new hand from many cards (as strings)
+   * @param cards the cards that make the hand (passed to the card constructor)
+   * 
+   * See {@link Card#Card(String) Card(String)}
+   */
+  // This constructor is a bit weird, but useful.
+  public Hand(String... cards) {
+    this();
+    for (String c: cards)
+      appendCard(new Card(c));
+  }
+  
+  /**
+   * Initialize a new hand from many cards
+   * @param cards the cards that make the hand
+   */
+  public Hand(Collection<Card> cards) {
+    this();
+    for(Card c: cards)
+      appendCard(c);
+  }
+  
   
   /**
    * @param newCard the newCard which will be added to hand
@@ -59,7 +94,7 @@ public class Hand {
    * @return the hand which is ArrayList<Card>
    */
   public ArrayList<Card> getCards() {
-    return this.hand;
+    return this.hand; //FIXME: Should this return a copy of the cards array?
   }
   
   /**
@@ -74,5 +109,11 @@ public class Hand {
    */
   public String toString() {
     return hand.toString();
+  }
+
+  // This is a convenience method more than anything else.
+  @Override
+  public int compareTo(Hand another) {
+    return (new Classifier(this)).compareTo(new Classifier(another));
   }
 }

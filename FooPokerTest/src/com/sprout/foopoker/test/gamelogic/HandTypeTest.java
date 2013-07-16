@@ -7,7 +7,7 @@ import com.sprout.foopoker.gamelogic.HandType;
 public class HandTypeTest extends TestCase {
 
   public void test_NotNull() {
-    HandType type = new HandType(HandType.FLUSH_ROYALE);
+    HandType type = new HandType(HandType.STRAIGHT_FLUSH);
     assertNotNull(type);
   }
   
@@ -28,14 +28,14 @@ public class HandTypeTest extends TestCase {
   
   public void test_ThrowExceptionFlushRoyale() {
     try{
-      new HandType(HandType.FLUSH_ROYALE+1);
+      new HandType(HandType.STRAIGHT_FLUSH+1);
       fail("IllegalArgumentException expected");
     } catch(IllegalArgumentException expected){ }
   }
 
   public void test_GetCorrectType() {
-    HandType t1 = new HandType(HandType.FLUSH_ROYALE);
-    assertEquals(t1.getType(), HandType.FLUSH_ROYALE);
+    HandType t1 = new HandType(HandType.STRAIGHT_FLUSH);
+    assertEquals(t1.getType(), HandType.STRAIGHT_FLUSH);
     
     HandType t2 = new HandType(HandType.FLUSH);
     assertEquals(t2.getType(), HandType.FLUSH);
@@ -45,7 +45,7 @@ public class HandTypeTest extends TestCase {
   }
   
   public void test_GetMessage() {
-    HandType t1 = new HandType(HandType.FLUSH_ROYALE);
+    HandType t1 = new HandType(HandType.STRAIGHT_FLUSH);
     assertNotNull(t1.getMessage());
     
     HandType t2 = new HandType(HandType.FLUSH);
@@ -56,10 +56,10 @@ public class HandTypeTest extends TestCase {
   }
   
   public void test_Equals() {
-    HandType t1 = new HandType(HandType.FLUSH_ROYALE);
+    HandType t1 = new HandType(HandType.STRAIGHT_FLUSH);
     HandType t2 = new HandType(HandType.FLUSH);
     HandType t3 = new HandType(HandType.HIGH_CARD);
-    HandType t4 = new HandType(HandType.FLUSH_ROYALE);
+    HandType t4 = new HandType(HandType.STRAIGHT_FLUSH);
     assertFalse(t1.equals(t2));
     assertFalse(t2.equals(t1));
     assertFalse(t1.equals(t3));
@@ -71,10 +71,10 @@ public class HandTypeTest extends TestCase {
   }
   
   public void test_Compare() {
-    HandType t1 = new HandType(HandType.FLUSH_ROYALE);
+    HandType t1 = new HandType(HandType.STRAIGHT_FLUSH);
     HandType t2 = new HandType(HandType.FLUSH);
     HandType t3 = new HandType(HandType.HIGH_CARD);
-    HandType t4 = new HandType(HandType.FLUSH_ROYALE);
+    HandType t4 = new HandType(HandType.STRAIGHT_FLUSH);
     assertTrue(t1.compareTo(t2) > 0);
     assertTrue(t2.compareTo(t1) < 0);
     assertTrue(t1.compareTo(t3) > 0);

@@ -10,7 +10,7 @@ public class HandType implements Comparable<HandType>{
   
   public int type;
   
-  public static final int FLUSH_ROYALE = 10;
+  public static final int STRAIGHT_FLUSH = 10;
   public static final int QUAD = 9;
   public static final int FULL_HOUSE = 8;
   public static final int FLUSH = 7;
@@ -26,7 +26,7 @@ public class HandType implements Comparable<HandType>{
    *   types
    */
   public HandType(int t) throws IllegalArgumentException{
-    if (t < HIGH_CARD || t > FLUSH_ROYALE) {
+    if (t < HIGH_CARD || t > STRAIGHT_FLUSH) {
       throw new IllegalArgumentException();
     }
     this.type = t;
@@ -38,7 +38,7 @@ public class HandType implements Comparable<HandType>{
    */
   public String getMessage(){
     switch(type) {
-    case FLUSH_ROYALE: return "Flush Royale";
+    case STRAIGHT_FLUSH: return "Flush Royale";
     case QUAD: return "Four of a Kind";
     case FULL_HOUSE: return "Full House";
     case FLUSH: return "Flush";
@@ -75,6 +75,10 @@ public class HandType implements Comparable<HandType>{
   @Override
   public int compareTo(HandType another) {
     return this.getType() - another.getType();
+  }
+  
+  public String toString() {
+    return getMessage();
   }
 }
 

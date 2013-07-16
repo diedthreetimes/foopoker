@@ -1,7 +1,10 @@
 package com.sprout.foopoker.gamelogic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+
+import com.sprout.foopoker.gamelogic.Card.Suit;
 
 import android.annotation.SuppressLint;
 
@@ -13,13 +16,17 @@ import android.annotation.SuppressLint;
  * @author ekinoguz
  */
 
+// FIXME: There is a difference in semantics between the various isXXX() methods. 
+//   Some are exclusive implying that if true they are the only HandType (e.g. isPair). Some are not (e.g. isStraight)
+//   This is not a huge issue, but confuses testing.
+
 @SuppressLint("UseSparseArrays")
 public class Classifier implements Comparable<Classifier>{
   
   /** holds the cards from given hand */
   private ArrayList<Card> cards;
   
-  /** ordered cards according to the classification */
+  /** ordered cards that make the hand according to the classification */
   private ArrayList<Card> orderedCards;
   
   /** type of the hand after classification */
@@ -32,17 +39,20 @@ public class Classifier implements Comparable<Classifier>{
   private HashMap<Integer, Integer> counts;
   
   /**
-   * @param hand the hand which will be classified. Make sure you sorted (
-   * in decreasing order) the hand beforehand!
+   * @param hand the hand which will be classified.
    * @throws IllegalArgumentException if hand has more than 5 cards
    */
   public Classifier(Hand hand) throws IllegalArgumentException{
-    // Make sure we have 5 cards.
-    if (hand.getSize() != 5) {
-      throw new IllegalArgumentException("We need 5 cards in order " +
+    // Make sure we have at least 5 cards.
+    if (hand.getSize() < 5) {
+      throw new IllegalArgumentException("We need at least 5 cards in order " +
           "to do categorization");
     }
+    
     cards = new ArrayList<Card>(hand.getCards());
+    //Collections.sort(cards, Collections.reverseOrder());
+    Collections.sort(cards);
+
     counts = new HashMap<Integer, Integer>();
     orderedCards = new ArrayList<Card>();
     initBestCardIndex();
@@ -55,12 +65,8 @@ public class Classifier implements Comparable<Classifier>{
    * @return the next best card from orderedCards
    * @throw IndexOutOfBoundsException if there is no more cards to return
    */
-  public Card getBestCard() throws IndexOutOfBoundsException {
-    if (bestCardIndex < this.orderedCards.size()) {
+  public Card nextBestCard() throws IndexOutOfBoundsException {
       return this.orderedCards.get(bestCardIndex++);
-    } else {
-      throw new IndexOutOfBoundsException("Have no more best cards in Classifier");
-    }
   }
   
   /**
@@ -77,14 +83,9 @@ public class Classifier implements Comparable<Classifier>{
    */
   private void classify() {
     createCountMap();
-    
-    boolean straight = isStraight();
-    ArrayList<Card> str = new ArrayList<Card>(orderedCards);
-    boolean flush = isFlush();
-    ArrayList<Card> flh = new ArrayList<Card>(orderedCards);
-    
-    if (straight && flush) {
-      type = new HandType(HandType.FLUSH_ROYALE);
+        
+    if (isStraightFlush()) {
+      type = new HandType(HandType.STRAIGHT_FLUSH);
       return;
     }
     
@@ -98,15 +99,13 @@ public class Classifier implements Comparable<Classifier>{
       return;
     }
     
-    if (flush) {
+    if (isFlush()) {
       type = new HandType(HandType.FLUSH);
-      orderedCards = new ArrayList<Card>(flh);
       return;
     }
     
-    if (straight) {
+    if (isStraight()) {
       type = new HandType(HandType.STRAIGHT);
-      orderedCards = new ArrayList<Card>(str);
       return;
     }
     
@@ -132,46 +131,124 @@ public class Classifier implements Comparable<Classifier>{
   }
   
   /**
+   * @return true if there is a straight flush, false otherwise
+   */
+  // This method is required because we we may have a straight flush,
+  //      in which the same five cards are not the highest straight nor flush
+  private boolean isStraightFlush() {
+    // OPTIMIZE: See comment below, faster ways to find straights (and also check if each is a flush)
+    
+    // This is a tricky case, since here we could have multiple straights
+    // Rather than repeat code, we spend some extra cycles and let isFlush find the flush for us.
+    if (!isFlush())
+      return false;
+    
+    Suit suit = orderedCards.get(0).getSuit();
+    
+    ArrayList<Card> only_suited_cards = new ArrayList<Card>();
+    for (Card c : cards)
+      if (c.getSuit() == suit)
+        only_suited_cards.add(c);
+    
+    
+    for (int i = only_suited_cards.size()-5; i >= 0; i--) {
+      if (isStraightFrom(i, only_suited_cards)) {
+          return true;
+      }
+    }
+    
+    return false;
+  }
+
+  /**
    * @return true if there is straight, false otherwise
    */
   private boolean isStraight() {
-    int startIndex = 0;
+    // OPTIMIZE: This isn't the most efficient way of doing straight checking, since we repeat work
+    for (int i = cards.size()-5; i >= 0; i--) {
+      if (isStraightFrom(i, cards))
+        return true;
+      
+    }
+    return false;
+  }
+  
+  // FIXME: Only the highest card in a straight matters
+  private boolean isStraightFrom(int idx, ArrayList<Card> cards) {
+    int startIndex = idx;
     boolean haveAce = false;
     // if we have an Ace
-    if (cards.get(0).getValue() == 1) {
-      startIndex = 1;
+    if (cards.get(idx).getValue() == 1) {
+      startIndex = idx+1;
       haveAce = true;
     }
-    for (int i = startIndex; i < cards.size()-1; i++) {
-      if (cards.get(i).getValue() - cards.get(i+1).getValue() != 1) {
-        return false;
-      }
+    
+    int in_a_row = haveAce ? 2 : 1;
+    for (int i = startIndex; i < cards.size() - 1; i++) {
+      int difference = cards.get(i).getValue() - cards.get(i+1).getValue();
+      
+      if (difference == 0)
+        continue;
+      if (difference != 1)
+        break;
+      else
+        in_a_row += 1; 
     }
-    // if we do not have an Ace OR
-    // if we have an Ace and the last card is either 10
-    // if we have an Ace and the last card is either 2
-    if (!haveAce || cards.get(4).getValue() == 10 || cards.get(4).getValue() == 2) {
-      orderedCards = new ArrayList<Card>(cards);
+    
+    if (in_a_row != 5)
+      return false;
+        
+    // if we do not have an Ace OR 
+    // if the last card is either 10 or 2 (this implies we have an ace)
+    int lastValue = cards.get(idx+4).getValue();
+    if (!haveAce || lastValue == 10 || lastValue == 2) {
+      orderedCards.clear();
+      int i = 0;
+      Card cur = null;
+      in_a_row = 0;
+      while (in_a_row < 5) {
+        if(cur == null || cards.get(idx+i).compareTo(cur) != 0) {
+          cur = cards.get(idx+i);
+          orderedCards.add(cur);
+          in_a_row++;
+        }
+        
+        i++;
+      }
       // ace is the smallest card if we have 5 high straight
-      if (cards.get(4).getValue() == 2) {
+      if (lastValue == 2) {
         orderedCards.add(orderedCards.remove(0));
       }
       return true;
     }
+    
     return false;
   }
   
   /**
    * @return true if there is a flush
    */
-  private boolean isFlush() {
-    int type = cards.get(0).getSuit().ordinal();
-    for (int i = 1; i < cards.size(); i++) {
-      if (cards.get(i).getSuit().ordinal() != type) {
-        return false;
-      }
+  private boolean isFlush() { // May not work properly for hands > 9 (I know of no such games)
+    int [] suits = new int [4];
+    
+    for (Card c : cards) {
+      suits[c.getSuit().ordinal()] += 1;
     }
-    orderedCards = new ArrayList<Card>(cards);
+    
+    int suit = -1;
+    for (int i = 0; i < 4; i++)
+      if (suits[i] >= 5)
+        suit = i;
+    
+    if (suit < 0)
+      return false;
+
+    // Add the five highest cards to orderedCards
+    orderedCards.clear();
+    for (Card c : cards)
+      if (c.getSuit().ordinal() == suit && orderedCards.size() < 5)
+        orderedCards.add(c);
+    
     return true;
   }
   
@@ -179,19 +256,24 @@ public class Classifier implements Comparable<Classifier>{
    * @return true if there is a quad, false otherwise
    */
   private boolean isQuad() {
-    if (counts.size() != 2) {
-      return false;
-    }
-    setUpOrderedCards(2);
+    orderedCards.clear();
     for (Card c : cards) {
       if (getCount(c) == 4) {
-        orderedCards.set(0, c);
-      } else if (getCount(c) == 1){
-        orderedCards.set(1, c);
-      } else {
-        return false;
-      }
+        orderedCards.add(c);
+        break;
+      } 
     }
+   
+    if (orderedCards.isEmpty())
+      return false;
+    
+    int i = 0;
+    while(orderedCards.get(0).compareTo(cards.get(i)) == 0)
+      i++;
+        
+    // An out of bounds i signifies all cards are equal...
+    orderedCards.add(cards.get(i));
+      
     return true;
   }
   
@@ -199,104 +281,91 @@ public class Classifier implements Comparable<Classifier>{
    * @return true if there is a pair, false otherwise
    */
   private boolean isPair() {
-    if (counts.size() != 4) {
+    if (counts.size() != cards.size() - 1)
       return false;
-    }
-    setUpOrderedCards(4);
-    int i = 1;
+    
+    orderedCards.clear();
+    orderedCards.add(null);
+    
     for (Card c : cards) {
-      if (getCount(c) == 2) {
+      if (getCount(c) == 2 && orderedCards.get(0) == null) {
         orderedCards.set(0, c);
-      } else {
-        orderedCards.set(i++, c);
+      } else if (orderedCards.size() < 4 && (orderedCards.get(0) == null || orderedCards.get(0).compareTo(c) != 0)) {
+        orderedCards.add(c);
       }
     }
-    return true;
+    
+    return (orderedCards.get(0) != null);
   }
   
   /**
    * @return true if there is a two pair, false otherwise
    */
   private boolean isTwoPair() {
-    if (counts.size() != 3) {
-      return false;
-    }
-    Card first = null;
-    Card second = null;
-    setUpOrderedCards(3);
-    for (int i = 0; i < cards.size(); i++) {
-      if (getCount(cards.get(i)) == 1) {
-        orderedCards.set(2, cards.get(i));
-      } else if (getCount(cards.get(i)) == 2) {
-        if (first == null) {
-          first = cards.get(i++);
-        } else {
-          second = cards.get(i++);
-        }
-      } else {
-        return false;
+    setUpOrderedCards(2);
+    for (Card c : cards) {
+      int count = getCount(c);
+      if (count == 1) {
+        if(orderedCards.size() < 3)
+          orderedCards.add(c);
+      } else if (count == 2) {
+          if (orderedCards.get(0) == null)
+            orderedCards.set(0,  c);
+          else if (orderedCards.get(1) == null && orderedCards.get(0).compareTo(c) != 0)
+            orderedCards.set(1, c);
+          // The third pair could be the biggest kicker so we can't rely on count
+          else if (orderedCards.size() < 3 && orderedCards.get(0).compareTo(c) != 0 && orderedCards.get(1).compareTo(c) != 0) 
+            orderedCards.add(c);
       }
     }
-    if (first.compareTo(second) < 0) {
-      orderedCards.set(0, first);
-      orderedCards.set(1, second);
-    } else {
-      orderedCards.set(0, second);
-      orderedCards.set(1, first);
-    }
-    return true;
+    
+    return (orderedCards.get(0) != null && orderedCards.get(1) != null);
   }
   
   /**
    * @return true if three is a three of a kind
    */
   private boolean isSet() {
-    if (counts.size() != 3) {
-      return false;
-    }
     setUpOrderedCards(1);
     for (Card c : cards) {
-      if (getCount(c) == 3) {
+      if (getCount(c) == 3 && orderedCards.get(0) == null) {
         orderedCards.set(0, c);
       } else if (getCount(c) == 1) {
-        orderedCards.add(c);
-      } else {
-        return false;
+        if (orderedCards.size() < 3 && (orderedCards.get(0) == null || c.compareTo(orderedCards.get(0)) != 0) )
+          orderedCards.add(c);
       }
     }
-    // adjust second and third cards
-    if (orderedCards.get(1).compareTo(orderedCards.get(2)) > 0) {
-      orderedCards.add(1, orderedCards.get(2));
-      orderedCards.remove(3);
-    }
-    return true;
+    
+    return (orderedCards.size() == 3 && orderedCards.get(0) != null);
   }
   
   /**
    * @return true if there is a full house
    */
   private boolean isFullHouse() {
-    if (counts.size() != 2) {
-      return false;
-    }
     setUpOrderedCards(2);
     for (Card card : cards) {
-      if (counts.get(card.getValue()) == 2) {
+      int count = getCount(card);
+      
+      if (count == 3 && orderedCards.get(0) == null)
+        orderedCards.set(0,card);
+      else if ((orderedCards.get(0) == null || card.compareTo(orderedCards.get(0)) != 0) && counts.get(card.getValue()) >= 2 && orderedCards.get(1) == null)
         orderedCards.set(1, card);
-      } else if (counts.get(card.getValue()) == 3) {
-        orderedCards.set(0, card);
-      } else {
-        return false;
-      }
     }
+    
+    if (orderedCards.get(0) == null || orderedCards.get(1) == null)
+      return false;
     return true;
   }
   
   /**
-   * @return true...
+   * @return true but sets orderedCards appropriately
    */
   private boolean isHighCard() {
-    orderedCards = new ArrayList<Card>(cards);
+    orderedCards.clear();
+    for (int i = 0; i < 5; i++)
+      orderedCards.add(cards.get(i));
+    
     return true;
   }
   
@@ -332,7 +401,7 @@ public class Classifier implements Comparable<Classifier>{
     }
     int comp;
     for (int i = 0; i < this.getOrderedCardsSize(); i++) {
-      comp = this.getBestCard().compareTo(another.getBestCard());
+      comp = this.nextBestCard().compareTo(another.nextBestCard());
       if (comp != 0) {
         // do not forget to initBestCardIndex for next comparison
         another.initBestCardIndex();

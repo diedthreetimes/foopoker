@@ -65,4 +65,19 @@ public class HandTest extends TestCase {
     hand.appendCards(cards); // If so why does this line exist?
     // FIXME: Where does the index out of bounds occur? Is this an appropriate exception?
   }
+  
+  public void test_Constructor() {
+    Hand hand = new Hand("3s");
+    assertEquals(hand.getCard(0), new Card("3s"));
+    
+    hand = new Hand("3s", "3c", "3d", "3h", "AD");
+    Hand hand2 = new Hand(new Card("3s"), new Card("3c"), new Card("3d"), new Card("3h"), new Card("Ad"));
+    
+    assertEquals(hand.getSize(), 5);
+    assertEquals(hand2.getSize(), 5);
+    
+    for (int i = 0; i < 5; i++)
+      assertEquals(hand.getCard(i), hand2.getCard(i));
+    
+  }
 }

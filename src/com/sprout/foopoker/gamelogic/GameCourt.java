@@ -98,6 +98,7 @@ public class GameCourt {
        *   very expensive to try all combination.
        */
       // res is the index to decide which cards will be selected
+      // FIXME: This is extremely expensive, and also unnecessary. See Hand.compareTo and changes to Classifier.
       int[] res = new int[5];
       for (int i = 0; i < res.length; i++) {
         res[i] = i + 1;

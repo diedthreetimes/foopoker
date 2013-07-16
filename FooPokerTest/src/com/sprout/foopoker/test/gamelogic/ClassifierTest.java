@@ -168,16 +168,9 @@ public class ClassifierTest extends TestCase {
   
   public void test_NullLow() {
     try {
-      new Classifier(createHand(1));
+      new Classifier(createHand(4));
       fail("IllegalArgument not thrown");
     } catch(IllegalArgumentException e) {}
-  }
-  
-  public void test_NullHigh() {
-    try {
-      new Classifier(createHand(6));
-      fail("Should have thrown IllegalArgument");
-    } catch(IllegalArgumentException e) { }
   }
     
   public void test_IsFlush() throws Exception {
@@ -205,32 +198,32 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h11);
     assertTrue(((Boolean)method.invoke(c)).booleanValue()); // A - 2 - 3 - 4 - 5 for flush royale
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 4);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 1); // Here A is part of a straight thus is low but isStraightFlush is never called
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 4);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
     c = new Classifier(h12); // 10 - J - Q - K - A for flush royale
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 13);
-    assertEquals(c.getBestCard().getValue(), 12);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 13);
+    assertEquals(c.nextBestCard().getValue(), 12);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
     c = new Classifier(h13); // 2 - 3 - 5 - 9 - A for flush
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 9);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 9);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
     c = new Classifier(h14); // 2 - 3 - 4 - 5 - 9 for flush
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 9);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 4);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 9);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 4);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
     c = new Classifier(h15);
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
   }
@@ -244,25 +237,25 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h3);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 4);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
-    assertEquals(c.getBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 4);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 1);
     c = new Classifier(h4);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 13);
-    assertEquals(c.getBestCard().getValue(), 12);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 13);
+    assertEquals(c.nextBestCard().getValue(), 12);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
     c = new Classifier(h5);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
-    assertEquals(c.getBestCard().getValue(), 9);
-    assertEquals(c.getBestCard().getValue(), 8);
-    assertEquals(c.getBestCard().getValue(), 7);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 9);
+    assertEquals(c.nextBestCard().getValue(), 8);
+    assertEquals(c.nextBestCard().getValue(), 7);
     c = new Classifier(h6);
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h7);
@@ -275,18 +268,18 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h11);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 4);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);;
-    assertEquals(c.getBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 4);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);;
+    assertEquals(c.nextBestCard().getValue(), 1);
     c = new Classifier(h12);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 13);
-    assertEquals(c.getBestCard().getValue(), 12);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 13);
+    assertEquals(c.nextBestCard().getValue(), 12);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
     c = new Classifier(h13);
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h14);
@@ -312,10 +305,10 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h7);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 13);
-    assertEquals(c.getBestCard().getValue(), 7);
-    assertEquals(c.getBestCard().getValue(), 6);
-    assertEquals(c.getBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 13);
+    assertEquals(c.nextBestCard().getValue(), 7);
+    assertEquals(c.nextBestCard().getValue(), 6);
+    assertEquals(c.nextBestCard().getValue(), 5);
     c = new Classifier(h8);
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h9);
@@ -341,8 +334,8 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h2);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
     c = new Classifier(h3);
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h4);
@@ -377,11 +370,11 @@ public class ClassifierTest extends TestCase {
     Method method = Classifier.class.getDeclaredMethod("isHighCard");
     method.setAccessible(true);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 10);
-    assertEquals(c.getBestCard().getValue(), 8);
-    assertEquals(c.getBestCard().getValue(), 6);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 8);
+    assertEquals(c.nextBestCard().getValue(), 6);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 2);
   }
   
   public void test_IsSet() throws Exception{
@@ -403,14 +396,14 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h8);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
     c = new Classifier(h9);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
-    assertEquals(c.getBestCard().getValue(), 9);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 9);
     c = new Classifier(h10);
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h11);
@@ -441,9 +434,9 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h6);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 2);
-    assertEquals(c.getBestCard().getValue(), 12);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 12);
     c = new Classifier(h7);
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h8);
@@ -464,9 +457,9 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h16);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 10);
   }
   
   public void test_IsFullHouse() throws Exception{
@@ -474,8 +467,8 @@ public class ClassifierTest extends TestCase {
     method.setAccessible(true);
     Classifier c = new Classifier(h1);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
     c = new Classifier(h2);
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h3);
@@ -504,128 +497,128 @@ public class ClassifierTest extends TestCase {
     assertFalse(((Boolean)method.invoke(c)).booleanValue());
     c = new Classifier(h15);
     assertTrue(((Boolean)method.invoke(c)).booleanValue());
-    assertEquals(c.getBestCard().getValue(), 2);
-    assertEquals(c.getBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 3);
   }
   
   public void test_Classifier() {
     // J - J - J - 10 - 10
     Classifier c = new Classifier(h1);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
     assertEquals(c.getHandType(), new HandType(HandType.FULL_HOUSE));
     
     // J - J - J - J - 10
     c = new Classifier(h2);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
     assertEquals(c.getHandType(), new HandType(HandType.QUAD));
     
     // 1 - 5 - 4 - 3 - 2 straight different suits
     c = new Classifier(h3);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 4);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
-    assertEquals(c.getBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 4);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 1);
     assertEquals(c.getHandType(), new HandType(HandType.STRAIGHT));
     
     // A - K - Q - J - 10 straight different suits
     c = new Classifier(h4);
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 13);
-    assertEquals(c.getBestCard().getValue(), 12);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 13);
+    assertEquals(c.nextBestCard().getValue(), 12);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
     assertEquals(c.getHandType(), new HandType(HandType.STRAIGHT));
     
     // J - 10 - 9 - 8 - 7 straight different suits
     c = new Classifier(h5);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
-    assertEquals(c.getBestCard().getValue(), 9);
-    assertEquals(c.getBestCard().getValue(), 8);
-    assertEquals(c.getBestCard().getValue(), 7);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 9);
+    assertEquals(c.nextBestCard().getValue(), 8);
+    assertEquals(c.nextBestCard().getValue(), 7);
     assertEquals(c.getHandType(), new HandType(HandType.STRAIGHT));
     
     // A - A - Q - 2 - 2
     c = new Classifier(h6);
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 2);
-    assertEquals(c.getBestCard().getValue(), 12);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 12);
     assertEquals(c.getHandType(), new HandType(HandType.TWO_PAIR));
     
     // K - K - 7 - 6 - 5
     c = new Classifier(h7);
-    assertEquals(c.getBestCard().getValue(), 13);
-    assertEquals(c.getBestCard().getValue(), 7);
-    assertEquals(c.getBestCard().getValue(), 6);
-    assertEquals(c.getBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 13);
+    assertEquals(c.nextBestCard().getValue(), 7);
+    assertEquals(c.nextBestCard().getValue(), 6);
+    assertEquals(c.nextBestCard().getValue(), 5);
     assertEquals(c.getHandType(), new HandType(HandType.PAIR));
     
     // A - A - A - 3 - 2
     c = new Classifier(h8);
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
     assertEquals(c.getHandType(), new HandType(HandType.THREE_OF_A_KIND));
     
     // J - J - J - 10 - 9
     c = new Classifier(h9);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
-    assertEquals(c.getBestCard().getValue(), 9);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 9);
     assertEquals(c.getHandType(), new HandType(HandType.THREE_OF_A_KIND));
     
     // 10 - 8 - 6 - 5 - 2 for High Card
     c = new Classifier(h10);
-    assertEquals(c.getBestCard().getValue(), 10);
-    assertEquals(c.getBestCard().getValue(), 8);
-    assertEquals(c.getBestCard().getValue(), 6);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 10);
+    assertEquals(c.nextBestCard().getValue(), 8);
+    assertEquals(c.nextBestCard().getValue(), 6);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 2);
     assertEquals(c.getHandType(), new HandType(HandType.HIGH_CARD));
     
     // A - 5 - 4 - 3 - 2 for flush royale
     c = new Classifier(h11);
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 4);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
-    assertEquals(c.getHandType(), new HandType(HandType.FLUSH_ROYALE));
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 4);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.getHandType(), new HandType(HandType.STRAIGHT_FLUSH));
     
     // A - K - Q - J - 10 for flush royale
     c = new Classifier(h12);
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 13);
-    assertEquals(c.getBestCard().getValue(), 12);
-    assertEquals(c.getBestCard().getValue(), 11);
-    assertEquals(c.getBestCard().getValue(), 10);
-    assertEquals(c.getHandType(), new HandType(HandType.FLUSH_ROYALE));
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 13);
+    assertEquals(c.nextBestCard().getValue(), 12);
+    assertEquals(c.nextBestCard().getValue(), 11);
+    assertEquals(c.nextBestCard().getValue(), 10);
+    assertEquals(c.getHandType(), new HandType(HandType.STRAIGHT_FLUSH));
     
     // A - 9 - 5 - 3 - 2 for flush
     c = new Classifier(h13);
-    assertEquals(c.getBestCard().getValue(), 1);
-    assertEquals(c.getBestCard().getValue(), 9);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 1);
+    assertEquals(c.nextBestCard().getValue(), 9);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
     assertEquals(c.getHandType(), new HandType(HandType.FLUSH));
     
     // 9 - 5 - 4 - 3 - 2 for flush
     c = new Classifier(h14);
-    assertEquals(c.getBestCard().getValue(), 9);
-    assertEquals(c.getBestCard().getValue(), 5);
-    assertEquals(c.getBestCard().getValue(), 4);
-    assertEquals(c.getBestCard().getValue(), 3);
-    assertEquals(c.getBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 9);
+    assertEquals(c.nextBestCard().getValue(), 5);
+    assertEquals(c.nextBestCard().getValue(), 4);
+    assertEquals(c.nextBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
     assertEquals(c.getHandType(), new HandType(HandType.FLUSH));
     
     // 3 - 3 - 2 - 2 - 2
     c = new Classifier(h15);
-    assertEquals(c.getBestCard().getValue(), 2);
-    assertEquals(c.getBestCard().getValue(), 3);
+    assertEquals(c.nextBestCard().getValue(), 2);
+    assertEquals(c.nextBestCard().getValue(), 3);
     assertEquals(c.getHandType(), new HandType(HandType.FULL_HOUSE));
   }
   
@@ -681,6 +674,72 @@ public class ClassifierTest extends TestCase {
     assertTrue(c15.compareTo(c4) > 0);
     assertTrue(c1.compareTo(c15) > 0);
     assertTrue(c2.compareTo(c15) > 0);
+  }
+  
+  // This tests mostly 7 card hands
+  public void test_SecondBest(){
+    Hand h1;
+    Hand h2;
+    
+    // Just make sure normal comparisons work as expected
+    h1 = new Hand("As", "Ac", "5s", "3d", "jd", "2c", "4c");    
+    h2 = new Hand("As", "Ac", "Ks", "3d", "Jd", "2c", "4c");    
+    assertTrue( h1.compareTo(h2) < 0 );
+    
+    h1 = new Hand("2s", "3c", "4s", "5d", "6d", "2c", "4c");
+    h2 = new Hand("As", "5c", "6s", "7d", "8d", "2c", "9c");    
+    assertEquals( (new Classifier(h1)).getHandType(), new HandType(HandType.STRAIGHT));
+    assertEquals( (new Classifier(h2)).getHandType(), new HandType(HandType.STRAIGHT));
+    assertTrue( h1.compareTo(h2) < 0 );
+    
+    h1 = new Hand("As", "Ac", "Ks", "3d", "Qd", "2c", "4c");    
+    h2 = new Hand("As", "Ac", "Ks", "3d", "Jd", "2c", "4c");    
+    assertTrue( h1.compareTo(h2) > 0 );
+
+    h1 = new Hand("2s", "2c", "Ks", "3d", "Qd", "5c", "4c");    
+    h2 = new Hand("2s", "2c", "Ks", "3d", "Jd", "5c", "4c");
+    assertTrue( h1.compareTo(h2) > 0 );
+    
+    h1 = new Hand("2s", "3s", "4s", "5s", "6s", "5c", "4c");    
+    h2 = new Hand("2s", "3s", "4s", "5s", "Ks", "5c", "4c");
+    assertEquals( (new Classifier(h1)).getHandType(), new HandType(HandType.STRAIGHT_FLUSH));
+    assertEquals( (new Classifier(h2)).getHandType(), new HandType(HandType.FLUSH));
+    assertTrue( h1.compareTo(h2) > 0 );
+    
+    h1 = new Hand("2s", "3s", "4s", "5s", "6s", "5c", "4c");    
+    h2 = new Hand("2s", "3s", "4s", "5s", "5d", "5c", "4c");
+    assertTrue( h1.compareTo(h2) > 0 );
+    
+    h1 = new Hand("2s", "4s", "6s", "As", "7s", "5c", "4c");    
+    h2 = new Hand("2s", "4s", "6s", "As", "3s", "5c", "4c");
+    assertTrue( h1.compareTo(h2) > 0 );
+    
+    h1 = new Hand("2s", "4s", "6s", "As", "7s", "5c", "4c");    
+    h2 = new Hand("3s", "4s", "6s", "As", "7s", "5c", "4c");
+    assertTrue( h1.compareTo(h2) < 0 );
+    
+    h1 = new Hand("js", "Kc", "Ks", "3d", "3c", "2c", "4c");    
+    h2 = new Hand("As", "4c", "Ks", "3d", "3c", "2c", "4c");    
+    assertTrue( h1.compareTo(h2) > 0 );
+    
+
+  }
+
+  public void test_AceStraights() throws Exception{
+    Method method = Classifier.class.getDeclaredMethod("isStraight");
+    method.setAccessible(true);
+    
+    Classifier c = new Classifier( new Hand("As", "2c", "3d", "4h", "5c") );    
+    assertTrue(((Boolean)method.invoke(c)).booleanValue());
+
+    c = new Classifier( new Hand("As", "Ks", "qs", "jh", "0d") );
+    assertTrue(((Boolean)method.invoke(c)).booleanValue());
+    
+    c = new Classifier( new Hand("As", "Ks", "js", "jh", "0d") );
+    assertFalse(((Boolean)method.invoke(c)).booleanValue());
+    
+    c = new Classifier( new Hand("As", "2c", "3c", "4c", "Ac"));
+    assertFalse(((Boolean)method.invoke(c)).booleanValue());
   }
   
   private Hand createHand(int size) {
