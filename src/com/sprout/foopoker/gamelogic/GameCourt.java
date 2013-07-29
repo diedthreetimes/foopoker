@@ -6,8 +6,6 @@ import java.util.HashMap;
 
 import android.annotation.SuppressLint;
 
-import com.sprout.foopoker.userdata.Player;
-
 
 /**
  * GameCourt will decide the winner(s)!
@@ -21,10 +19,6 @@ import com.sprout.foopoker.userdata.Player;
 
 @SuppressLint("UseSparseArrays")
 public class GameCourt {
-  
-  /** mapping between playerId - her best hand*/
-  private HashMap<Integer, Classifier> classifiers;
-  
   /** players who will be compared */
   private ArrayList<Player> players;
   
@@ -44,7 +38,6 @@ public class GameCourt {
       throw new IllegalArgumentException("If there are not any players, then" +
           "please do not bother me");
     }
-    this.classifiers = new HashMap<Integer, Classifier>();
     this.fiveCards = fiveCards;
     this.players = players;  
     
@@ -60,10 +53,9 @@ public class GameCourt {
     if (players.size() == 1) {
       return bestPlayers;
     }
-    Classifier best = classifiers.get(players.get(0).getId());
     int compareValue;
     for (int i = 1; i < players.size(); i++) {
-      compareValue = best.compareTo(classifiers.get(players.get(i).getId()));
+      compareValue = bestPlayers.get(0).getHand().compareTo(players.get(i).getHand());
       if (compareValue == 0) {
         bestPlayers.add(players.get(i));
       } else if (compareValue < 0){
@@ -85,81 +77,6 @@ public class GameCourt {
     for (Player player : players) {
       // append all table cards to each Player's hand
       player.appendCards(fiveCards);
-      
-      // now Player will have 7 cards. make sure you sorted each Player's hand
-      Collections.sort(player.getCards());
-      
-      /**
-       * find the player's best hand and update the result in
-       * classifiers map. Here is the outline of algorithm:
-       * 1) For each 5 Card combination of Hand, find its classifier
-       * 2) Compare classifier with best classifier so far and update best
-       * Note: We only have 42 different combination. It should not be
-       *   very expensive to try all combination.
-       */
-      // res is the index to decide which cards will be selected
-      // FIXME: This is extremely expensive, and also unnecessary. See Hand.compareTo and changes to Classifier.
-      int[] res = new int[5];
-      for (int i = 0; i < res.length; i++) {
-        res[i] = i + 1;
-      }
-      boolean done = false;
-      while (!done) {
-        Hand tempHand = new Hand();
-        for (int i = 0; i < res.length; i++) {
-          tempHand.appendCard(player.getCard(res[i]-1));
-        }
-        Classifier tempClassifier = new Classifier(tempHand);
-        this.updateClassifierMap(player.getId(), tempClassifier);
-        done = getNext(res, 7, 5); // because we are doing C(7,5)
-      }
-    }
-  }
-  
-  /**
-   * Get the next combination from num array
-   * I copied this from here: http://stackoverflow.com/a/7631893/2009800
-   * @param num
-   * @param n
-   * @param r
-   * @return
-   */
-  private boolean getNext(final int[] num, final int n, final int r) {
-    int target = r - 1;
-    num[target]++;
-    if (num[target] > ((n - (r - target)) + 1)) {
-      // Carry the One
-      while (num[target] > ((n - (r - target)))) {
-        target--;
-        if (target < 0) {
-            break;
-        }
-      }
-      if (target < 0) {
-        return true;
-      }
-      num[target]++;
-      for (int i = target + 1; i < num.length; i++) {
-        num[i] = num[i - 1] + 1;
-      }
-    }
-    return false;
-  }
-  
-  /**
-   * Updates the classifiers map
-   * @param id the player id whose classifier will be updated
-   * @param newClassifier compare it if there is already one, update accordingly
-   */
-  private void updateClassifierMap(int id, Classifier newClassifier) {
-    // if we do not have it, simply put it
-    if (!classifiers.containsKey(id)) {
-      classifiers.put(id, newClassifier);
-    } else {
-      // update if new one is better than the previous one
-      if (newClassifier.compareTo(classifiers.get(id)) > 0) {
-        classifiers.put(id, newClassifier);
-      }
     }
   }
 }

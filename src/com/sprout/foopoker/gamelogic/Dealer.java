@@ -3,13 +3,13 @@ package com.sprout.foopoker.gamelogic;
 import java.util.Arrays;
 import java.util.Collections;
 
+//TODO: We probably shoudln't have a signelton here. What if we want to support multiple games!
 /**
  * Singleton design pattern since we should only have 1 dealer!
  * dealer can shuffle() and deal the top card from deck with dealCard()
  * 
  * @author ekinoguz
  */
-
 
 public class Dealer {
 

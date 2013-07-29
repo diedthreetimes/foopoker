@@ -1,9 +1,8 @@
 package com.sprout.foopoker.gamelogic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Timer;
-
-import com.sprout.foopoker.userdata.Player;
 
 import android.text.format.Time;
 
@@ -58,25 +57,13 @@ public class Game {
 	 * @param newPlayers
 	 */
 	public void startGame(ArrayList<Player> newPlayers) {
-		// Pick random numbers for each player, 
-		// 		and decide who is going to be the dealer.
-		int best = Integer.MIN_VALUE, bestIndex = 0, local;
-		for (int i = 0; i < newPlayers.size(); i++) {
-			local = (int) Math.random() * 1000;
-			if (local > best) {
-				best = local;
-				bestIndex = i;
-			}
-		}
-		
-		// bestIndex is the dealer, add it first to CircularPlayers
-		// 	add rest in the given order
-		players.insert(newPlayers.get(bestIndex));
-		for (int i = bestIndex+1; i < newPlayers.size(); i++)
-			players.insert(newPlayers.get(i));
-		for (int i = 0; i < bestIndex; i++)
-			players.insert(newPlayers.get(i));
-		
+	  
+	  ArrayList<Player> temp = (ArrayList<Player>) newPlayers.clone();
+	  Collections.shuffle(temp);
+	  
+	  for(Player player : temp){
+	    players.insert(player);
+	  }
 	}
 	
 	/**

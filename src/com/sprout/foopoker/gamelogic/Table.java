@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.sprout.foopoker.userdata.Player;
-
 /*
  * CircularPlayers of Players which will be used in Hand
  */
@@ -42,7 +40,7 @@ public class Table {
 	 * @return current player
 	 * This call should be followed by next() to advance next player
 	 */
-	public Player get() {
+	public Player peek() {
 		while (players.get(cur) == null)
 			cur = (cur + 1) % size();
 		return players.get(cur);
@@ -60,17 +58,27 @@ public class Table {
 	/**
 	 * Advance current to next player
 	 */
-	public void next() {
+	public Player next() {
 		cur += 1;
 		cur %= size();
+		return peek();
 	}
 	
 	/**
 	 * Removes the player who is currently playing
 	 */
-	public void remove() {
-		players.set(cur, null);
-		freePositions.add(cur);
+	public Player remove() {		
+		return remove(cur);
+	}
+	
+	/**
+	 * Removes player at idx
+	 */
+	public Player remove(int idx) {
+	   Player p = get(idx);
+	   players.set(idx, null);
+	   freePositions.add(idx);
+	   return p;
 	}
 	
 	/**

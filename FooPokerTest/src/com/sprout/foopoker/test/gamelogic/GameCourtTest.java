@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import com.sprout.foopoker.gamelogic.Card;
 import com.sprout.foopoker.gamelogic.GameCourt;
 import com.sprout.foopoker.gamelogic.Hand;
-import com.sprout.foopoker.userdata.Player;
+import com.sprout.foopoker.gamelogic.Player;
 
 public class GameCourtTest extends TestCase{
 

@@ -1,9 +1,8 @@
-package com.sprout.foopoker.userdata;
+package com.sprout.foopoker.gamelogic;
 
 import java.util.ArrayList;
 
-import com.sprout.foopoker.gamelogic.Card;
-import com.sprout.foopoker.gamelogic.Hand;
+import com.sprout.foopoker.userdata.User;
 
 public class Player{
 
@@ -69,6 +68,10 @@ public class Player{
 	
 	public ArrayList<Card> getCards() {
 		return hand.getCards();
+	}
+	
+	public Hand getHand() {
+	  return hand;
 	}
 	
 	public Card getCard(int index) throws IndexOutOfBoundsException {
