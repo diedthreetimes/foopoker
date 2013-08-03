@@ -1,7 +1,9 @@
 package com.sprout.foopoker.gamelogic;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Timer;
 
 import android.text.format.Time;
@@ -17,68 +19,49 @@ public class Game {
 	public Timer blindTimer;
 	public Timer blindTimerx; 
 	
-	public long smallBlind;
-	public long bigBlind;
-	public long ante;
+	public BlindSchedule blindSchedule;
+	public Blind blind;
 	
 	private Table players;
 	
-	public Game(long smallBlind, long bigBlind, long ante) {
-		this.smallBlind = smallBlind;
-		this.bigBlind = bigBlind;
-		this.ante = ante;
+	public Game(BlindSchedule bs, Collection<Player> players) {
+	  this.blindSchedule = bs;
 		this.players = new Table();
+		
+    List<Player> temp = new ArrayList<Player>( players );
+    Collections.shuffle(temp);
+    
+    for(Player player : temp)
+      this.players.insert(player);
 	}
 	
-	public void play() {
-		int totalWinners, winners[];
+	public Player play() {
+		
 		long profit;
+		ArrayList<Player> winners;
 		
 		while (players.size() > 1) {
-			GameHand hand = new GameHand();
-			winners = new int[0];//= GameCourt.getWinner(hand);
+		  blind = blindSchedule.getBlinds(players.size());
+		  players.advanceDealer();
+			GameHand hand = new GameHand(players, blind);
+			
+			hand.play(); // This will run the hand to completion
+
+	    // TODO: Should we integrate the below into GameHand? 
+			winners = hand.getWinners();
 			
 			// for each winner, update their stack accordingly
-			totalWinners = winners.length;
+			int totalWinners = winners.size();
 			profit = hand.stack/totalWinners;
 			
-			for (int i = 0; i < winners.length; i++) {
-				players.get(winners[i]).winPot(profit);
+			for (Player p: winners) {
+				p.winPot(profit);
 			}
 			
-			// update each persons stack accordingly
-			
 			// if we have any player with zero stack, kick them from table!
-		}
-	}
-	
-	/**
-	 * Start the game with given newPlayers
-	 * @param newPlayers
-	 */
-	public void startGame(ArrayList<Player> newPlayers) {
-	  
-	  ArrayList<Player> temp = (ArrayList<Player>) newPlayers.clone();
-	  Collections.shuffle(temp);
-	  
-	  for(Player player : temp){
-	    players.insert(player);
+			players.removeBroke(); // TODO: Incorporate this into table automatically
 	  }
-	}
-	
-	/**
-	 * Double the blinds
-	 * Start the blind timer
-	 */
-	private void updateBlinds() {
 		
+		return players.get(0);
 	}
-
-	
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
