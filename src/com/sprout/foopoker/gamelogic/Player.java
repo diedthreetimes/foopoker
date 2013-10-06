@@ -3,14 +3,14 @@ package com.sprout.foopoker.gamelogic;
 import java.util.ArrayList;
 
 import com.sprout.foopoker.userdata.User;
+import android.util.Pair;
 
 public class Player{
-
-	
 	public long stack;
 	public Status status;
+	// TODO: Table should check this status for folded instead of keeping track of it.
 	public enum Status { PLAYING, FOLDED, FINISH }
-	public enum Actions { FOLD, CALL, RAISE, CHECK}
+	public enum Action { FOLD, CALL, RAISE, CHECK}
 	public User user;
 	
 	private Hand hand; 
@@ -67,12 +67,30 @@ public class Player{
 		
 	}
 	
-	public void foldHand() {
+	private void foldHand() {
 		status = Status.FOLDED;
 	}
 	
-	public void finishHand() {
+	private void finishHand() {
 		status = Status.FINISH;
+	}
+	
+	/**
+	 * This is the main entry method for any player. 
+	 * Sublcass this method to easily provide other types of players.
+	 * @return an Action with any extra data (only use in raise)
+	 */
+	public Pair<Action,Integer> play(int additional_bet, int minimum_raise) {
+		//TODO: Hook up the android logger.
+		//Log.d(TAG, "ENTERING PLAY. Folding");
+		
+		// Player logic goes here. 
+		// S->E: My vision was to make this abstract and have differing types of players
+		//   subclass it as necessary. For instance a cli android activity could subclass it one way
+		//   and a computer player could subclass it another. (we probably want a computer player for testing,
+		//   but there is no reason it has to perform sensible actions.
+		
+		return new Pair<Action, Integer> (Action.FOLD, 0); 
 	}
 	
 	// TODO: copy constructor

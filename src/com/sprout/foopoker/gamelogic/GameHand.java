@@ -2,6 +2,7 @@ package com.sprout.foopoker.gamelogic;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import android.util.Pair;
 
 public class GameHand {
 
@@ -95,18 +96,37 @@ public class GameHand {
 		//	System.out.println("asdf");
 	}
 	
+	/**
+	 * @return true if game is still active.
+	 */
 	public boolean bettingRound() {
 		while( current_bets.get(players.peek()) < maxBet() ) {
-			Player cur_player = players.next();
+			Player cur_player = players.peek();
 			if(current_bets.get(cur_player) < 0)
 				current_bets.put(cur_player,0);
-			// Action action = players.next().play();
-			// TODO: Play should include the actions available to player. the current bet to player.
-			//      Do we need to pass any other information? 
-			// TODO: Process action
+			int raise_to_i = maxBet() - current_bets.get(cur_player);
+			Pair<Player.Action, Integer> pair = cur_player.play(raise_to_i, blind.getBig());
+			Player.Action action = pair.first;
+			
+			switch(action){
+				case FOLD: 
+					players.foldCurrent();
+					break;
+				case CHECK:
+					break;
+				case CALL:
+					placeBet(cur_player, raise_to_i);
+					break;
+				case RAISE:
+					placeBet(cur_player, pair.second);
+					break;
+			}	
+			// TODO: Should we verify the correctness of the action?
 			
 			if(players.numActive() <= 0)
 				return false;
+			
+			players.next();
 		}
 		return true;
 	}
