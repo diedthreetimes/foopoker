@@ -10,9 +10,11 @@ public class Player{
 	public long stack;
 	public Status status;
 	public enum Status { PLAYING, FOLDED, FINISH }
+	public enum Actions { FOLD, CALL, RAISE, CHECK}
 	public User user;
 	
-	private Hand hand;
+	private Hand hand; 
+	// I'm assuming hand will contain even shared cards. Should it only be the pocket?
 	
 	public Player(int id, long stack) {
 		this.user = new User(id);
@@ -26,6 +28,15 @@ public class Player{
 		this.status = Status.PLAYING;
 	}
 	
+	// For now all betting goes through this interface (including blinds)
+	//   To collect history we may want to add a bet_type, or add functions
+	
+	//TODO: ADD mechansim for splitting pots. Here are a few ideas:
+	//	[1] Return a BET_STATUS here specifying if a bet was able to be made for value
+	//		Callers would then need to check this status and split the pot accordingly.
+	//  [2] Return an int here specifying the amount of value that was able to be bet.
+	//		Again callers need to check the return value and split the pot accordingly.
+	//  [3] Consider any bets > value to be an invalid call. Caller needs to check stack manually.
 	public void bet(long value) {
 		stack -= value;
 	}
@@ -78,6 +89,9 @@ public class Player{
 	  return hand.getCard(index);
 	}
 	
+	public void appendCard(Card newCard) {
+		this.hand.appendCard(newCard);
+	}
 	public void appendCards(ArrayList<Card> newCards) {
 		this.hand.appendCards(newCards);
 	}

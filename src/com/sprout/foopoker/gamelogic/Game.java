@@ -49,7 +49,7 @@ public class Game {
 			
 			// for each winner, update their stack accordingly
 			int totalWinners = winners.size();
-			profit = hand.stack/totalWinners;
+			profit = hand.getPot()/totalWinners;
 			
 			for (Player p: winners) {
 				p.winPot(profit);

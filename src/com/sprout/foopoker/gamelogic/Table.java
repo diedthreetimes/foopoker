@@ -3,6 +3,7 @@ package com.sprout.foopoker.gamelogic;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.HashMap;
 
 /*
  * CircularPlayers of Players which will be used in Hand
@@ -12,21 +13,28 @@ import java.util.Queue;
 
 // TODO: This class should handle skipping the small blind after being removed!
 // TODO: This calss should handle heads up scenario correctly. (Where the dealer is the small blind)
+// TODO: This class shoudl be enumerable
 public class Table {
 
 	private ArrayList<Player> players;
 	private int cur;
-	private int dealer; // This is in the public index space (so blinds can be posted easily)
+	private int dealer; // This is in the public index space (so blinds can be calculated easily)
 	
 	private final int MAX_PLAYERS = 10;
 	private Queue<Integer> freePositions;
 	
+	private boolean[] foldedPlayers;
+	
+	
+	
 	public Table() {
 		players = new ArrayList<Player>(MAX_PLAYERS);
+		foldedPlayers = new boolean[MAX_PLAYERS];
 		freePositions = new LinkedList<Integer>();
 		for (int i = 0; i < MAX_PLAYERS; i++) {
 			players.add(null);
 			freePositions.add(i);
+			foldedPlayers[i] = false;
 		}
 		cur = 0;
 		
@@ -75,10 +83,22 @@ public class Table {
 	 * Move the button. This also initializes cur.
 	 */
 	public void advanceDealer() {
+		
+	  // Clear folded players
+	  for(int i=0; i < foldedPlayers.length; i++)
+	  	foldedPlayers[i] = false;
+		
 	  dealer++;
 	  dealer %= size();
 	  
 	  cur = this.publicIdxToPlayersIdx(dealer+3); 
+	}
+	
+	/**
+	 * Advance to the next round of betting.
+	 */
+	public void nextRound() {
+		cur = this.publicIdxToPlayersIdx(dealer+3);
 	}
 	
 	/**
@@ -91,14 +111,24 @@ public class Table {
 	}
 	
 	/**
+	 * @param i the index
+	 * @return true if player i has folded
+	 */
+	// Exposing this is a bit hacky. Perhaps we should incorporate this logic into get.
+	public boolean getFolded(int i) {
+		return foldedPlayers[publicIdxToPlayersIdx(i)];
+	}
+	
+	/**
 	 * Advance current to next player
 	 */
 	public Player next() {
 		cur += 1;
 		cur %= size();
 		
-    while (players.get(cur) == null)
-      cur = (cur + 1) % size();
+		// While we have an empty seat or a folded player
+    	while (players.get(cur) == null || foldedPlayers[cur])
+      		cur = (cur + 1) % size();
     
 		return peek();
 	}
@@ -119,6 +149,27 @@ public class Table {
 	public Player remove(int idx) {
 	  return _remove(publicIdxToPlayersIdx(idx));
 	}
+	
+	/**
+	 * Fold the current player removing him from this round
+	 */
+	public void foldCurrent() {
+		foldedPlayers[cur] = true; 
+	}
+	
+	
+	/**
+	 * The number of players still playing the hand (non folded)
+	 */
+	public int numActive(){
+		// TODO: This is not always be accuate (if we have an empty seat marked as folded)
+		int num_folded = 0;
+		for( int i=0; i < foldedPlayers.length; i++ )
+			if(foldedPlayers[i])
+				num_folded++;
+		return size() - num_folded;
+	}
+	
 	
 	/**
 	 * Removes player at idx
