@@ -6,40 +6,26 @@ import java.util.ArrayList;
 public class GameHand {
 
 	public int id;
-	
-	public long moveTimer;
-	public long startTime; 
-	public long stack;
-	
-	public int moveTimeLimit;
+    
+    public long stack;
 	
 	public Blind blind;
 	
 	public Dealer dealer;
 	public Table players;
 	
+    // What is the meaning of this ENUM
 	public enum Status { STARTED, PLAYING, FINISHED }
 	public Status status;
 	
+    // These are the shared table cards.
 	private ArrayList<Card> fiveCards;
 	
 	public GameHand(Table players, Blind blind) {
-		startTime = System.currentTimeMillis();
 		dealer = Dealer.getInstance();
 		fiveCards = new ArrayList<Card>();
 		this.players = players;
 		this.blind = blind;
-		
-		moveTimeLimit = 5;
-	}
-	
-	
-	/**
-	 * 
-	 * @param time in seconds for each move
-	 */
-	public void setMoveTimeLimit(int time){
-	  moveTimeLimit = time;
 	}
 	
 	/**
@@ -77,10 +63,6 @@ public class GameHand {
 	
 	public void saveHand() {
 		
-	}
-	
-	public boolean moveExpired() {
-		return true;
 	}
 	
 	public boolean potGood() {
