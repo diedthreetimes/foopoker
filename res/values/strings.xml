@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">foopoker</string>
+	<string name="action_clear">Clear Log</string>
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="connect_button">Find Peers</string>

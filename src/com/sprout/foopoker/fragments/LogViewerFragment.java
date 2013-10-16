@@ -11,6 +11,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import android.os.AsyncTask;
 import com.sprout.foopoker.fragments.LogViewerFragment.*;
+import android.view.*;
+import com.sprout.foopoker.R;
+import android.os.Handler;
+import android.os.Message;
+import android.widget.Toast;
+
 
 
 public class LogViewerFragment extends ListFragment
@@ -22,10 +28,21 @@ public class LogViewerFragment extends ListFragment
 
 	private LogViewerFragment.CollectLogTask mCollectLogTask = null;
 
+	protected Handler logHandler;
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		logHandler = new Handler(){
+			@Override
+			public void handleMessage(Message msg){
+				addItem(msg.getData().getString("LINE"));
+			}
+		};
+		
+		setHasOptionsMenu(true);
+		
 		// Create the list adapter
 		setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_activated_1));
 		
@@ -37,13 +54,31 @@ public class LogViewerFragment extends ListFragment
 		
 		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			
-		clearLog();
 		watchLog();
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		// Inflate the menu items for use in the action bar
+		inflater.inflate(R.menu.log_viewer_actions, menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle presses on the action bar items
+		switch (item.getItemId()) {
+			case R.id.action_clear:
+				clearLog();
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
+		}
 	}
 	
 	private void log(String str){
 		if(D) Log.d(TAG, str);
-		addItem("LOG: " + str);
+//		addItem("LOG: " + str);
 	}
 	
 	private void error(String str){
@@ -78,7 +113,7 @@ public class LogViewerFragment extends ListFragment
 		
 		//TODO: The below doesn't seem to actually be clearing the log
 		// Clear the file (although we don't bother doing this for now.
-		Process process = null;
+		/*Process process = null;
 		try
 		{
 			String[] command = {"logcat", "-c"};
@@ -90,7 +125,9 @@ public class LogViewerFragment extends ListFragment
 		}
 		finally {
 			if(process != null) process.destroy();
-		}
+		}*/
+		
+		log("Log Cleared");
 	}
 	
 	public void watchLog(){
@@ -124,30 +161,38 @@ public class LogViewerFragment extends ListFragment
 		if (!watch)
 			list.add("-d");
 
-        mCollectLogTask = (CollectLogTask) new CollectLogTask().execute(list);
+        mCollectLogTask = new CollectLogTask(list);
+		mCollectLogTask.start();
 		log("Task Started.");
 	}
 	
     
-	// To continuously watch the log this may need to be a service
-    private class CollectLogTask extends AsyncTask<ArrayList<String>, Void, StringBuilder>
+    private class CollectLogTask extends Thread
 	{
 
-		private static final int MAX_LOG_MESSAGE_LENGTH = 500;
-        @Override
-        protected void onPreExecute(){
-            //showProgressDialog(getString(R.string.acquiring_log_progress_dialog_message));
-        }
         
+		private boolean mCancel = false;
+		private ArrayList<String> params;
+
+		public CollectLogTask(ArrayList<String> params){
+			this.params = params;
+		}
+		
+		public void cancel(){
+			mCancel = true;
+		}
+		
+		public boolean isCancelled(){ return mCancel;}
+		
         @Override
-        protected StringBuilder doInBackground(ArrayList<String>... params){
-            final StringBuilder log = new StringBuilder();
+        public void run(){
+            //final StringBuilder log = new StringBuilder();
 			Process process = null;
             try{
                 ArrayList<String> commandLine = new ArrayList<String>();
                 commandLine.add("logcat");//$NON-NLS-1$
 				
-                ArrayList<String> arguments = ((params != null) && (params.length > 0)) ? params[0] : null;
+                ArrayList<String> arguments = params;
                 if (null != arguments){
                     commandLine.addAll(arguments);
                 }
@@ -157,12 +202,16 @@ public class LogViewerFragment extends ListFragment
                 
                 String line;
                 while ((line = bufferedReader.readLine()) != null){ 
-                    log.append(line);
-                    log.append("\n");
+                    //log.append(line);
+                    //log.append("\n");
 					
-					// Could potentially use a callback here.
-					addItem(line);
+					Bundle data = new Bundle();
+					data.putString("LINE", line);
 					
+					Message msg = logHandler.obtainMessage();
+					msg.setData(data);
+					msg.sendToTarget();									
+										
 					if(isCancelled())
 						break;
                 }
@@ -173,63 +222,23 @@ public class LogViewerFragment extends ListFragment
 			finally{
 				if(process != null) process.destroy();
 			}
-
-            return log;
-        }
-
-        @Override
-        protected void onPostExecute(StringBuilder log){
-            if (null != log){
-                //truncate if necessary
-                int keepOffset = Math.max(log.length() - MAX_LOG_MESSAGE_LENGTH, 0);
-                if (keepOffset > 0){
-                    log.delete(0, keepOffset);
-                }
-                
-                /*if (mAddiitonalInfo != null){
-                    log.insert(0, App.LINE_SEPARATOR);
-                    log.insert(0, mAddiitonalInfo);
-                }*/
-                
-				// Start result activity and finish
-                //finish();
-            }
-            else{
-                //dismissProgressDialog();
-				error("Failed to get Log");
-                //showErrorDialog(getString(R.string.failed_to_get_log_message));
-            }
-			
-			log("Task finished.");
         }
     }
     
-    /*void showProgressDialog(String message){
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setMessage(message);
-        mProgressDialog.setCancelable(true);
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener(){
-            public void onCancel(DialogInterface dialog){
-                cancelCollectTask();
-                finish();
-            }
-        });
-        mProgressDialog.show();
-    }
-    
-    private void dismissProgressDialog(){
-        if (null != mProgressDialog && mProgressDialog.isShowing())
-        {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }*/
-    
+       
     public void cancelCollectTask(){
-        if (mCollectLogTask != null && mCollectLogTask.getStatus() == AsyncTask.Status.RUNNING) 
+        if (mCollectLogTask != null && !mCollectLogTask.isCancelled()) 
         {
-            mCollectLogTask.cancel(true);
+            mCollectLogTask.cancel();
+			Log.v(TAG, "Attempting to cancel"); // this also ensures the thread will have something to process
+			try
+			{
+				mCollectLogTask.join(100);
+			}
+			catch (InterruptedException e)
+			{
+				Log.e(TAG, "Collect log did not end successfully");
+			}
             mCollectLogTask = null;
         }
     }
