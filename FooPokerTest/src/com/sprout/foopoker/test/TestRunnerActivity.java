@@ -32,6 +32,10 @@ public class TestRunnerActivity extends LogViewerActivity
 		}
 	}
 	
+	private void logTestResultLine(String line){
+		Log.i(RESULT_TAG, line);	
+	}
+	
 	private void runTests(){
 		Log.d(TAG, "TESTS STARTED");
 		
@@ -55,9 +59,7 @@ public class TestRunnerActivity extends LogViewerActivity
 
 			String line;
 			while ((line = bufferedReader.readLine()) != null){
-				//logTest(line);
-				// TODO: separte into function, and colorize based on failure/success
-				Log.i(RESULT_TAG, line);
+				logTestResultLine(line);
 			}
 			
 			// Log.i(TAG, "Instrumentation errors");
