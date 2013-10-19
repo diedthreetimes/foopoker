@@ -45,7 +45,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.sprout.foopoker.FindPeersActivity" />
         </activity>
-		<activity android:name="com.sprout.foopoker.LogViewerActivity" android:label="@string/app_name">
+		<activity android:name="com.sprout.foopoker.LogViewerActivity"
+				  android:theme="@style/android:Theme.Holo.Light"
+				  android:label="@string/app_name">
 			<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

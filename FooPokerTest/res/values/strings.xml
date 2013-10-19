@@ -2,5 +2,5 @@
 <resources>
 
     <string name="app_name">FooPokerTestTest</string>
-
+	<string name="action_test">Run All Tests</string>
 </resources>

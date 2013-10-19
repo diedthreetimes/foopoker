@@ -107,17 +107,30 @@ public class LogViewerFragment extends ListFragment
 		cancelCollectTask();
 	}
 	
+	@Override
+	public void onStart(){
+		super.onStart();
+		watchLog();
+	}
+	
 	public void clearLog(){
 		// Clear the UI
 		((ArrayAdapter<String>) getListAdapter()).clear();
 		
 		//TODO: The below doesn't seem to actually be clearing the log
-		// Clear the file (although we don't bother doing this for now.
-		/*Process process = null;
+		// Clear the file itself
+		Process process = null;
 		try
 		{
 			String[] command = {"logcat", "-c"};
 			process = Runtime.getRuntime().exec(command);
+		
+		    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+			String line;
+			while ((line = bufferedReader.readLine()) != null){ 
+				Log.d(TAG, "clear " +line);
+			}
 		}
 		catch (IOException e)
 		{
@@ -125,7 +138,7 @@ public class LogViewerFragment extends ListFragment
 		}
 		finally {
 			if(process != null) process.destroy();
-		}*/
+		}
 		
 		log("Log Cleared");
 	}
@@ -234,6 +247,7 @@ public class LogViewerFragment extends ListFragment
 			try
 			{
 				mCollectLogTask.join(100);
+				Log.d(TAG, "collect cancelled");
 			}
 			catch (InterruptedException e)
 			{
