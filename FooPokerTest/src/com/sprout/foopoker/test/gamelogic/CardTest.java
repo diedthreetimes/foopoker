@@ -12,7 +12,7 @@ public class CardTest extends TestCase {
   
   public void test_IsCardCreated() {
     Card c1 = new Card(13);
-    assertSame(c1.getValue(), 13);
+    assertEquals(13, c1.getValue());
   }
   
 //  (expected=IllegalArgumentException.class)
@@ -42,7 +42,7 @@ public class CardTest extends TestCase {
   
   public void test_IsCardCorrectValue() {
     Card c3 = new Card(27);
-    assertSame(c3.getValue(), 1);
+    assertEquals(c3.getValue(), 1);
   }
   
   public void test_CompareBigger() {
