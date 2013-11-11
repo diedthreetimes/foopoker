@@ -16,8 +16,8 @@ public class Dealer {
   static Dealer dealer = null;
   
   // Properties
-  private Card[] cards;
-  private int position; // top of the deck
+  protected Card[] cards;
+  protected int position; // top of the deck
   
   private final int DECK_SIZE = 52;
   private final int SHUFFLE_COUNT = 6; // I want to shuffle the deck 6 times!
@@ -35,7 +35,7 @@ public class Dealer {
   }
   
   // Constructor
-  private Dealer() {
+  protected Dealer() {
     this.cards = new Card[DECK_SIZE];
     for (int i = 1; i <= DECK_SIZE; i++)
       cards[i-1] = new Card(i);

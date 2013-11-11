@@ -5,18 +5,15 @@ import java.util.HashMap;
 import android.util.Pair;
 
 public class GameHand {
-
-	public int id;
-    
-    public long pot;
+    private long pot;
 	
-	public Blind blind;
+	private Blind blind;
 	
-	public Dealer dealer;
-	public Table players;
+	private Dealer dealer;
+	private Table players;
 	
     // What is the meaning of this ENUM
-	public enum Status { STARTED, PLAYING, FINISHED }
+	public enum Status { STARTED, FINISHED }
 	public Status status;
 	
     // These are the shared table cards.
@@ -24,13 +21,21 @@ public class GameHand {
 	// This may not be necessary, but it simplifies betting logic
 	private HashMap<Player, Integer> current_bets; 
 	
-	public GameHand(Table players, Blind blind) {
-		dealer = Dealer.getInstance();
+	public GameHand(Table players, Blind blind){
+		init(players, blind, Dealer.getInstance());
+	}
+	
+	public GameHand(Table players, Blind blind, Dealer dealer) {
+		init(players, blind, dealer);
+	}
+	
+	protected void init(Table players, Blind blind, Dealer dealer) {
 		fiveCards = new ArrayList<Card>();
 		current_bets = new HashMap<Player, Integer>();		
 		this.players = players;
 		this.blind = blind;
-		
+		this.dealer = dealer;
+
 		clearBets();
 	}
 	
@@ -94,12 +99,14 @@ public class GameHand {
 		// S->E: Is potGood supposed to be an error check? 
 		// if (!potGood())
 		//	System.out.println("asdf");
+		
+		status = Status.FINISHED;
 	}
 	
 	/**
 	 * @return true if game is still active.
 	 */
-	public boolean bettingRound() {
+	private boolean bettingRound() {
 		while( current_bets.get(players.peek()) < maxBet() ) {
 			Player cur_player = players.peek();
 			if(current_bets.get(cur_player) < 0)
@@ -131,7 +138,7 @@ public class GameHand {
 		return true;
 	}
 	
-	public void dealShared(int num_cards){
+	private void dealShared(int num_cards){
 		for(int i=0; i < num_cards; i++){
 			Card new_card = dealer.dealCard();
 			
