@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.HashMap;
+import android.util.*;
 
 /*
  * CircularPlayers of Players which will be used in Hand
@@ -24,8 +25,6 @@ public class Table {
 	private Queue<Integer> freePositions;
 	
 	private boolean[] foldedPlayers;
-	
-	
 	
 	public Table() {
 		players = new ArrayList<Player>(MAX_PLAYERS);
@@ -107,7 +106,10 @@ public class Table {
 	 * @return the ith active player
 	 */
 	public Player get(int i) {
-		return players.get(publicIdxToPlayersIdx(i));
+        int pub_idx = publicIdxToPlayersIdx(i);
+        if (pub_idx < 0)
+            return null;
+		return players.get(pub_idx);
 	}
 	
 	/**
@@ -123,6 +125,8 @@ public class Table {
 	 * Advance current to next player
 	 */
 	public Player next() {
+        if (numActive() == 0)
+            return null;
 		cur += 1;
 		cur %= size();
 		
@@ -162,7 +166,7 @@ public class Table {
 	 * The number of players still playing the hand (non folded)
 	 */
 	public int numActive(){
-		// TODO: This is not always be accuate (if we have an empty seat marked as folded)
+		// TODO: This is not always accuate (if we have an empty seat marked as folded)
 		int num_folded = 0;
 		for( int i=0; i < foldedPlayers.length; i++ )
 			if(foldedPlayers[i])
@@ -175,10 +179,12 @@ public class Table {
 	 * Removes player at idx
 	 */
 	private Player _remove(int idx) {
-	   Player p = players.get(idx);
-	   players.set(idx, null);
-	   freePositions.add(idx);
-	   return p;
+	    if (idx < 0)
+			return null;
+	    Player p = players.get(idx);
+	    players.set(idx, null);
+	    freePositions.add(idx);
+	    return p;
 	}
 	
 	/**
@@ -201,14 +207,19 @@ public class Table {
 	
 	// Converts the public indexes (indexes into active players) into indexes on the players list (which contains nulls)
 	private int publicIdxToPlayersIdx(int idx) {
+      if (size() == 0)
+          return -10;
+          
 	  idx %= size();
 	  int k=-1;
-	  for (int i=0; i<players.size(); i++)
-	    if(players.get(i) != null)
+	  for (int i=0; i<players.size(); i++) {
+	    if(players.get(i) != null) {
 	      k++;
 	      if(idx == k)
-	        return k;	    
-	      
-	  return -1; // This should never happen
+	        return i;	    
+        }
+      }
+          
+	  return -10; // This should never happen
 	}
 }
