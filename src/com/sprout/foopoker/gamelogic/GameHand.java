@@ -87,6 +87,9 @@ public class GameHand {
 	 	int [] cards_per_round = {0,3,1,1};
 	 	for(int i = 0; i < cards_per_round.length; i++)
 			dealShared(cards_per_round[i]);
+			
+		// TODO: Does play need to cycle?
+		// Let the players place their bets
 		if(!bettingRound()) {
 			// Only one player left no need to continue
 			return;
