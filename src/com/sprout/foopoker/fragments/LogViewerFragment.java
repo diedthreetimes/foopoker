@@ -66,13 +66,11 @@ public class LogViewerFragment extends ListFragment
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle presses on the action bar items
-		switch (item.getItemId()) {
-			case R.id.action_clear:
-				clearLog();
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
+		if (item.getItemId() == R.id.action_clear) {
+			clearLog();
+			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
 		}
 	}
 	
